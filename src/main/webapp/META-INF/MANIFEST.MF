@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Built-By: Tebogo Marvin Malogadithlare
+Build-Jdk: 17
+Main-Class: com.sams.SamsApplication
+Start-Class: com.sams.SamsApplication
+Spring-Boot-Version: 3.2.9
