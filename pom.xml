@@ -63,9 +63,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.2.9</version>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <mainClass>com.sams.SamsApplication</mainClass> <!-- this points to main application class -->
+                    <mainClass>com.sams.SamsApplication</mainClass>
                 </configuration>
             </plugin>
             <!-- Maven Compiler Plugin -->
