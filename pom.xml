@@ -7,7 +7,7 @@
     <groupId>com.sams</groupId>
     <artifactId>NEWSAMS</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>Student Attendance Management System (SAMS)</name>
     <description>A Spring Boot project for managing student attendance</description>
@@ -82,7 +82,7 @@
             <!-- Maven WAR Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.3</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
