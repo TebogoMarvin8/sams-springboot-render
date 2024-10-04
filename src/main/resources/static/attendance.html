@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMS - Student Attendance Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --hover-color: #3a7bd5;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        header h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dashboard-section {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .dashboard-section h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background-color: var(--primary-color);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .dashboard-buttons button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-buttons button i {
+            margin-right: 0.5rem;
+        }
+
+        .submenu {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .submenu.active {
+            display: block;
+        }
+
+        .submenu-content {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .submenu h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .submenu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .submenu ul li {
+            background-color: #fff;
+            margin-bottom: 0.5rem;
+            padding: 0.8rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #attendance-section form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #attendance-section select,
+        #attendance-section button {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        #attendance-section button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #attendance-section button:hover {
+            background-color: var(--hover-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-buttons {
+                flex-direction: column;
+            }
+
+            .dashboard-buttons button {
+                width: 100%;
+            }
+        }
+
+        /* Update these styles for the grouped table */
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .attendance-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .attendance-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .attendance-table tr:hover {
+            background-color: #ddd;
+        }
+
+        .class-header {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        .nested-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .nested-table th,
+        .nested-table td {
+            border: none;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .nested-table th {
+            background-color: #f8f8f8;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Student Attendance Management</h1>
+        <nav>
+            <ul>
+                <li><a href="student-dashboard.html">Dashboard</a></li>
+                <li><a href="#" onclick="logout(event)">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main id="attendance-management">
+        <section class="dashboard-section">
+            <h2 id="welcomeMessage"></h2>
+
+            <div class="dashboard-buttons">
+                <button onclick="toggleSubmenu('viewAttendance')"><i class="fas fa-calendar-check"></i> View Attendance
+                    Records</button>
+                <button onclick="toggleSubmenu('markAttendance')"><i class="fas fa-user-check"></i> Mark
+                    Attendance</button>
+            </div>
+            <div id="viewAttendance" class="submenu">
+                <div class="submenu-content">
+                    <h3>Attendance Records</h3>
+                    <table id="attendanceTable" class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Class Name</th>
+                                <th>Course Name</th>
+                                <th>Instructor</th>
+                                <th>Attendance Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="markAttendance" class="submenu">
+                <div id="attendance-section" class="submenu-content">
+                    <h3>Mark Attendance</h3>
+                    <form id="classSelectionForm">
+                        <label for="class">Select Class:</label>
+                        <select id="class" name="class" required>
+                            <option value="">Loading classes...</option>
+                        </select>
+                        <button type="button" onclick="startFaceRecognition()">Start Facial Recognition</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Student Attendance Management System</p>
+    </footer>
+
+    <script>
+        window.onload = function () {
+            fetch("/api/users/session-info")
+                .then(response => response.json())
+                .then(data => {
+                    const welcomeMessage = document.getElementById("welcomeMessage");
+                    welcomeMessage.textContent = "Welcome back, " + data.studentName;
+                })
+                .catch(error => console.error("Error fetching session info:", error));
+        }
+
+        function logout(event) {
+            event.preventDefault();
+            alert("You have been logged out.");
+            window.location.href = 'login.html';
+            sessionStorage.clear();
+        }
+
+        function toggleSubmenu(section) {
+            const submenus = document.querySelectorAll('.submenu');
+            submenus.forEach(menu => menu.classList.remove('active'));
+
+            const selectedMenu = document.getElementById(section);
+            if (selectedMenu) {
+                selectedMenu.classList.add('active');
+            } else {
+                console.error(`Submenu not found for section: ${section}`);
+            }
+
+            if (section === 'viewAttendance') viewAttendance();
+            if (section === 'markAttendance') loadClassesDropdown();
+        }
+
+        // Function to view attendance records
+        function viewAttendance() {
+            fetch("/api/users/session-info")
+                .then(response => response.json())
+                .then(data => {
+                    const studentId = data.studentId;
+                    return fetch(`/api/instructors/attendance/student/${studentId}`);
+                })
+                .then(response => response.json())
+                .then(attendanceRecords => {
+                    const attendanceTableBody = document.getElementById('attendanceTableBody');
+                    attendanceTableBody.innerHTML = '';
+
+                    if (attendanceRecords.length === 0) {
+                        const row = attendanceTableBody.insertRow();
+                        const cell = row.insertCell(0);
+                        cell.colSpan = 4;
+                        cell.textContent = 'No attendance records available.';
+                    } else {
+                        const groupedAttendance = groupAttendanceByClass(attendanceRecords);
+
+                        for (const [className, records] of Object.entries(groupedAttendance)) {
+                            const classRow = attendanceTableBody.insertRow();
+                            const classCell = classRow.insertCell(0);
+                            classCell.colSpan = 4;
+                            classCell.className = 'class-header';
+                            classCell.textContent = className;
+
+                            const nestedTableRow = attendanceTableBody.insertRow();
+                            const nestedTableCell = nestedTableRow.insertCell(0);
+                            nestedTableCell.colSpan = 4;
+
+                            const nestedTable = document.createElement('table');
+                            nestedTable.className = 'nested-table';
+                            nestedTableCell.appendChild(nestedTable);
+
+                            const nestedHeader = nestedTable.createTHead().insertRow();
+                            nestedHeader.innerHTML = `
+                                <th>Course Name</th>
+                                <th>Instructor</th>
+                                <th>Attendance Time</th>
+                            `;
+
+                            const nestedBody = nestedTable.createTBody();
+                            records.forEach(attendance => {
+                                const row = nestedBody.insertRow();
+                                row.innerHTML = `
+                                    <td>${attendance.clazz.course.courseName || 'No Course Name'}</td>
+                                    <td>${(attendance.clazz.instructor.firstName + ' ' + attendance.clazz.instructor.lastName) || 'No Instructor'}</td>
+                                    <td>${attendance.attendanceTime || 'No Time'}</td>
+                                `;
+                            });
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching attendance:', error));
+        }
+
+        function groupAttendanceByClass(attendanceRecords) {
+            const groupedAttendance = {};
+            attendanceRecords.forEach(attendance => {
+                const className = attendance.clazz.className || 'No Class Name';
+                if (!groupedAttendance[className]) {
+                    groupedAttendance[className] = [];
+                }
+                groupedAttendance[className].push(attendance);
+            });
+            return groupedAttendance;
+        }
+
+
+        // Function to load classes for marking attendance
+        async function loadClassesDropdown() {
+            try {
+                // First, get the student ID from the session info
+                const sessionResponse = await fetch("/api/users/session-info");
+                if (!sessionResponse.ok) {
+                    throw new Error('Failed to fetch session info');
+                }
+                const sessionData = await sessionResponse.json();
+                const studentId = sessionData.studentId;
+
+                if (!studentId) {
+                    throw new Error('Student ID not found in session');
+                }
+
+                // Now, fetch the classes for this specific student
+                const classesResponse = await fetch(`/api/class-student/student/${studentId}`);
+                if (!classesResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const classes = await classesResponse.json();
+                const classSelect = document.getElementById('class');
+
+                classSelect.innerHTML = '';
+
+                if (classes.length === 0) {
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'No classes available';
+                    classSelect.appendChild(defaultOption);
+                } else {
+                    // Add a default "Select a class" option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select a class';
+                    classSelect.appendChild(defaultOption);
+
+                    // Add options for each class
+                    classes.forEach(clazz => {
+                        const option = document.createElement('option');
+                        option.value = clazz.id;
+                        option.textContent = clazz.className;
+                        classSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                const classSelect = document.getElementById('class');
+                classSelect.innerHTML = '<option value="">Error loading classes</option>';
+            }
+        }
+
+        function startFaceRecognition() {
+            const classSelect = document.getElementById('class');
+            if (!classSelect) {
+                console.error("Class dropdown not found.");
+                return;
+            }
+
+            const classId = classSelect.value;
+            if (!classId) {
+                alert("Please select a class.");
+                return;
+            }
+
+            fetch("/api/users/session-info")
+                .then(response => response.json())
+                .then(data => {
+                    const studentId = data.studentId;
+                    if (studentId) {
+                        console.log(`Student ID: ${studentId}, Class ID: ${classId}`);
+                        window.location.href = `face-recognition.html?classId=${classId}&studentId=${studentId}`;
+                    } else {
+                        console.error("Student ID not found in session.");
+                        alert("Student ID not found. Please log in again.");
+                    }
+                })
+                .catch(error => console.error("Error fetching student info:", error));
+        }
+    </script>
+</body>
+
+</html>

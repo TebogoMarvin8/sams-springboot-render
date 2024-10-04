@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMS - Instructor Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --hover-color: #2980b9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-section {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-section h2 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .dashboard-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background-color: var(--primary-color);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .dashboard-buttons button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-buttons button i {
+            margin-right: 0.5rem;
+        }
+
+        .submenu {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .submenu.active {
+            display: block;
+        }
+
+        .submenu-content {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .submenu h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        form label {
+            font-weight: 500;
+        }
+
+        form input,
+        form select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        form button {
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: var(--hover-color);
+        }
+
+        #attendanceResults,
+        #attendanceByClassResults,
+        #attendanceByStudentResults {
+            margin-top: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            background-color: var(--secondary-color);
+            color: #fff;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-buttons {
+                flex-direction: column;
+            }
+
+            .dashboard-buttons button {
+                width: 100%;
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .class-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .class-table th,
+        .class-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .class-table th {
+            background-color: var(--primary-color);
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .class-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .class-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .student-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .student-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .student-list li:last-child {
+            border-bottom: none;
+        }
+
+        .remove-student {
+            color: #e74c3c;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .remove-student:hover {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+
+        .add-student-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .add-student-form select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .add-student-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .add-student-button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Instructor Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#" onclick="logout(event)">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="dashboard">
+        <section class="dashboard-section">
+            <h2>Dashboard Overview</h2>
+            <div class="dashboard-buttons">
+                <button onclick="showStudents()"><i class="fas fa-users"></i> View All Students</button>
+                <button onclick="showCourses()"><i class="fas fa-book"></i> View All Courses</button>
+                <button onclick="showClasses()"><i class="fas fa-chalkboard"></i> View All Classes</button>
+                <button onclick="toggleSubmenu('attendanceByDate')"><i class="fas fa-calendar-alt"></i> View Attendance
+                    by Date</button>
+                <button onclick="toggleSubmenu('attendanceByClass')"><i class="fas fa-clipboard-list"></i> View
+                    Attendance by Class</button>
+                <button onclick="toggleSubmenu('attendanceByStudent')"><i class="fas fa-user-check"></i> View Attendance
+                    by Student</button>
+                <button onclick="toggleSubmenu('classStudentManagement')">
+                    <i class="fas fa-user-friends"></i> Manage Class-Student Relationships
+                </button>
+            </div>
+
+            <div id="students" class="submenu">
+                <div class="submenu-content">
+                    <h3>All Students</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="courses" class="submenu">
+                <div class="submenu-content">
+                    <h3>All Courses</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Course Code</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="classes" class="submenu">
+                <div class="submenu-content">
+                    <h3>All Classes</h3>
+                    <div id="classTable"></div>
+                </div>
+            </div>
+
+            <div id="attendanceByDate" class="submenu">
+                <div class="submenu-content">
+                    <h3>Attendance by Date</h3>
+                    <form id="attendanceDateForm">
+                        <label for="attendanceDate">Select Date:</label>
+                        <input type="date" id="attendanceDate" name="attendanceDate" required>
+                        <button type="submit">View Attendance</button>
+                    </form>
+                    <div id="attendanceResults"></div>
+                </div>
+            </div>
+
+            <div id="attendanceByClass" class="submenu">
+                <div class="submenu-content">
+                    <h3>Attendance by Class</h3>
+                    <form id="attendanceClassForm">
+                        <label for="classSelect">Select Class:</label>
+                        <select id="classSelect" required>
+                            <option value="">Select a class</option>
+                        </select>
+                        <button type="submit">View Attendance</button>
+                    </form>
+                    <div id="attendanceByClassResults"></div>
+                </div>
+            </div>
+
+            <div id="attendanceByStudent" class="submenu">
+                <div class="submenu-content">
+                    <h3>Attendance by Student</h3>
+                    <form id="attendanceStudentForm" onsubmit="event.preventDefault(); viewAttendanceByStudent();">
+                        <label for="studentSelectt">Select Student:</label>
+                        <select id="studentSelectt" required>
+                            <option value="">Select a student</option>
+                        </select>
+                        <button type="submit">View Attendance</button>
+                    </form>
+                    <div id="attendanceByStudentResults"></div>
+                </div>
+            </div>
+
+            <div id="classStudentManagement" class="submenu">
+                <div class="submenu-content">
+                    <h3>Class-Student Management</h3>
+                    <div id="classStudentTable"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Student Attendance Management System</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize dropdowns and attach form event listeners
+            loadClassOptions();
+            loadCourseOptions();
+            loadStudentOptions();
+
+            document.getElementById('attendanceDateForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const date = document.getElementById('attendanceDate').value;
+                if (date) {
+                    viewAttendanceByDate(date);
+                }
+            });
+
+            document.getElementById('attendanceClassForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const classId = document.getElementById('classSelect').value;
+                if (classId) {
+                    viewAttendanceByClass(classId);
+                }
+            });
+
+            document.getElementById('attendanceStudentForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const studentId = document.getElementById('studentSelect').value;
+                if (studentId) {
+                    viewAttendanceByStudent(studentId);
+                }
+            });
+
+            // Add event listener for class-student form
+            document.getElementById('classStudentForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                addStudentToClass();
+            });
+
+            // Add event listener for class select change
+            document.getElementById('classSelect').addEventListener('change', function () {
+                loadStudentsForClass();
+            });
+        });
+
+
+        function logout(event) {
+            // Prevent the default link action (which would navigate away)
+            event.preventDefault();
+            alert("You have been logged out.");
+            window.location.href = 'login.html';
+            sessionStorage.clear();
+        }
+
+        function showStudents() {
+            fetch('/api/students')
+                .then(response => response.json())
+                .then(data => {
+                    const studentsList = document.getElementById('studentsList');
+                    studentsList.innerHTML = ''; // Clear the existing contents
+                    if (data.length === 0) {
+                        studentsList.innerHTML = '<tr><td colspan="2">No students found.</td></tr>';
+                    } else {
+                        data.forEach(student => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `<td>${student.firstName} ${student.lastName}</td><td>${student.email}</td>`;
+                            studentsList.appendChild(row);
+                        });
+                    }
+                    toggleSubmenu('students');
+                })
+                .catch(error => console.error('Error fetching students:', error));
+        }
+
+        function showCourses() {
+            fetch('/api/admins/courses')
+                .then(response => response.json())
+                .then(data => {
+                    const coursesList = document.getElementById('coursesList');
+                    coursesList.innerHTML = ''; // Clear the existing contents
+                    if (data.length === 0) {
+                        coursesList.innerHTML = '<tr><td colspan="2">No courses found.</td></tr>';
+                    } else {
+                        data.forEach(course => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `<td>${course.courseName}</td><td>${course.courseCode}</td>`;
+                            coursesList.appendChild(row);
+                        });
+                    }
+                    toggleSubmenu('courses');
+                })
+                .catch(error => console.error('Error fetching courses:', error));
+        }
+        function clearClassTable() {
+            const classTable = document.getElementById('classTable');
+            classTable.innerHTML = '';
+        }
+        async function showClasses() {
+            try {
+                const response = await fetch('http://localhost:8080/api/admins/classes');
+                const classes = await response.json();
+                clearClassTable();
+                // Create table element
+                const table = document.createElement('table');
+
+                // Create table header
+                const headers = ['ID', 'Class Name', 'Start Time', 'End Time', 'Day of Week', 'Course Name', 'Course Code', 'Instructor Name', 'Instructor Email'];
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                // Create table body
+                const tbody = document.createElement('tbody');
+
+                classes.forEach(cls => {
+                    const row = document.createElement('tr');
+
+                    // Table data for each column
+                    const rowData = [
+                        cls.id,
+                        cls.className,
+                        cls.startTime,
+                        cls.endTime,
+                        cls.dayOfWeek,
+                        cls.course.courseName,
+                        cls.course.courseCode,
+                        cls.instructor ? `${cls.instructor.firstName} ${cls.instructor.lastName}` : 'N/A',
+                        cls.instructor ? cls.instructor.email : 'N/A'
+                    ];
+
+                    rowData.forEach(data => {
+                        const td = document.createElement('td');
+                        td.textContent = data;
+                        row.appendChild(td);
+                    });
+
+                    tbody.appendChild(row);
+                });
+
+                table.appendChild(tbody);
+
+                // Append table to the div with id 'classTable'
+                document.getElementById('classTable').appendChild(table);
+                toggleSubmenu('classes');
+            } catch (error) {
+                console.error('Error loading class data:', error);
+            }
+        }
+
+        function loadStudentOptions() {
+            fetch('/api/students')
+                .then(response => response.json())
+                .then(data => {
+                    const studentSelectt = document.getElementById('studentSelectt');
+                    studentSelectt.innerHTML = '<option value="">Select a student</option>';
+                    data.forEach(student => {
+                        studentSelectt.innerHTML += `<option value="${student.id}">${student.firstName} ${student.lastName} (${student.email})</option>`;
+                    });
+                })
+                .catch(error => console.error('Error fetching students:', error));
+        }
+
+        function loadClassOptions() {
+            fetch('/api/admins/classes')
+                .then(response => response.json())
+                .then(data => {
+                    const classSelect = document.getElementById('classSelect');
+                    classSelect.innerHTML = '<option value="">Select a class</option>';
+                    const uniqueClasses = new Set();
+                    data.forEach(cls => {
+                        const classInfo = `${cls.className} (${cls.course.courseCode}) - ${cls.startTime} to ${cls.endTime}, ${cls.dayOfWeek}`;
+                        if (!uniqueClasses.has(classInfo)) {
+                            uniqueClasses.add(classInfo);
+                            classSelect.innerHTML += `<option value="${cls.id}">${classInfo}</option>`;
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching classes:', error));
+        }
+
+        function loadCourseOptions() {
+            fetch('/api/admins/courses')
+                .then(response => response.json())
+                .then(data => {
+                    const courseSelect = document.getElementById('courseSelect');
+                    courseSelect.innerHTML = '<option value="">Select a course</option>';
+                    data.forEach(course => {
+                        courseSelect.innerHTML += `<option value="${course.id}">${course.courseName}</option>`;
+                    });
+                })
+                .catch(error => console.error('Error fetching courses:', error));
+        }
+
+        // Helper function to create a table from attendance data
+        function createAttendanceTable(data, headers) {
+            const table = document.createElement('table');
+            table.classList.add('attendance-table');
+
+            // Create table header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+            data.forEach(attendance => {
+                const row = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    switch (header) {
+                        case 'Student':
+                            if (attendance.student && attendance.student.firstName && attendance.student.lastName) {
+                                td.textContent = `${attendance.student.firstName} ${attendance.student.lastName}`;
+                            } else {
+                                td.textContent = 'N/A';
+                            }
+                            break;
+                        case 'Class':
+                            td.textContent = attendance.clazz && attendance.clazz.className ? attendance.clazz.className : 'N/A';
+                            break;
+                        case 'Course':
+                            td.textContent = attendance.clazz && attendance.clazz.course && attendance.clazz.course.courseName ? attendance.clazz.course.courseName : 'N/A';
+                            break;
+                        case 'Instructor':
+                            if (attendance.clazz && attendance.clazz.instructor && attendance.clazz.instructor.firstName && attendance.clazz.instructor.lastName) {
+                                td.textContent = `${attendance.clazz.instructor.firstName} ${attendance.clazz.instructor.lastName}`;
+                            } else {
+                                td.textContent = 'N/A';
+                            }
+                            break;
+                        case 'Attendance Time':
+                            td.textContent = attendance.attendanceTime ? new Date(attendance.attendanceTime).toLocaleString() : 'N/A';
+                            break;
+                        default:
+                            td.textContent = ''; // Default for unmatched headers
+                    }
+                    row.appendChild(td);
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            return table;
+        }
+
+        function viewAttendanceByDate(date) {
+            fetch(`/api/instructors/attendance/date?dateTime=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    const results = document.getElementById('attendanceResults');
+                    results.innerHTML = '';
+
+                    // Update headers as specified
+                    const headers = ['Student', 'Class', 'Course', 'Instructor', 'Attendance Time'];
+                    const table = createAttendanceTable(data, headers);
+                    results.appendChild(table);
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance by date:', error);
+                    document.getElementById('attendanceResults').innerHTML = 'Error fetching attendance data. ' + error.message;
+                });
+        }
+
+        function viewAttendanceByClass(classId) {
+            fetch(`/api/instructors/attendance/class/${classId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const results = document.getElementById('attendanceByClassResults');
+                    results.innerHTML = '';
+                    const headers = ['Student', 'Class', 'Course', 'Instructor', 'Attendance Time'];
+                    const table = createAttendanceTable(data, headers);
+                    results.appendChild(table);
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance by class:', error);
+                    document.getElementById('attendanceByClassResults').innerHTML = 'Error fetching attendance data.';
+                });
+        }
+
+        // Function to fetch students and populate the dropdown
+        function fetchStudents() {
+            fetch('/api/students') // Adjust the endpoint as necessary
+                .then(response => response.json())
+                .then(data => {
+                    const studentSelect = document.getElementById('studentSelectt');
+                    studentSelect.innerHTML = ''; // Clear existing options
+
+                    data.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.id; // Assuming 'id' is the unique identifier
+                        option.textContent = `${student.firstName} ${student.lastName}`; // Display student name
+                        studentSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching students:', error);
+                    document.getElementById('studentSelectt').innerHTML = '<option>Error loading students</option>';
+                });
+        }
+
+        // Function to view attendance by selected student
+        function viewAttendanceByStudent() {
+            const studentSelect = document.getElementById('studentSelectt');
+            const studentId = studentSelect.value;
+
+            if (!studentId) {
+                document.getElementById('attendanceByStudentResults').innerHTML = 'Please select a student.';
+                return;
+            }
+
+            fetch(`/api/instructors/attendance/student/${studentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const results = document.getElementById('attendanceByStudentResults');
+                    results.innerHTML = ''; // Clear previous results
+                    const headers = ['Class', 'Course', 'Instructor', 'Attendance Time'];
+                    const table = createAttendanceTable(data, headers); // Ensure this function is defined to create the table
+                    results.appendChild(table);
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance by student:', error);
+                    document.getElementById('attendanceByStudentResults').innerHTML = 'Error fetching attendance data.';
+                });
+        }
+
+        // Call this function when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', fetchStudents);
+
+        function toggleSubmenu(section) {
+            const submenus = document.querySelectorAll('.submenu');
+            submenus.forEach(menu => menu.classList.remove('active'));
+
+            const selectedMenu = document.getElementById(section);
+            selectedMenu.classList.toggle('active');
+
+            if (section === 'classStudentManagement') {
+                loadClassStudentTable();
+            } else if (section !== 'classes') {
+                clearClassTable();
+            }
+        }
+
+        function loadClassStudentTable() {
+            fetch('/api/admins/classes')
+                .then(response => response.json())
+                .then(classes => {
+                    const tableContainer = document.getElementById('classStudentTable');
+                    tableContainer.innerHTML = '';
+
+                    const table = document.createElement('table');
+                    table.className = 'class-table';
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Class Name</th>
+                                <th>Course Code</th>
+                                <th>Students</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    `;
+
+                    classes.forEach(cls => {
+                        const row = table.insertRow();
+                        row.innerHTML = `
+                            <td>${cls.className}</td>
+                            <td>${cls.course.courseCode}</td>
+                            <td>
+                                <ul class="student-list" id="studentList-${cls.id}">
+                                    <li>Loading students...</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <div class="add-student-form">
+                                    <select id="studentSelect-${cls.id}">
+                                        <option value="">Select a student</option>
+                                    </select>
+                                    <a href="#" class="add-student-button" onclick="addStudentToClass(${cls.id}); return false;">
+                                        <i class="fas fa-user-plus"></i> Add Student
+                                    </a>
+                                </div>
+                            </td>
+                        `;
+                    });
+
+                    tableContainer.appendChild(table);
+
+                    // Load students for each class
+                    classes.forEach(cls => {
+                        loadStudentsForClass(cls.id);
+                    });
+                    // Load student options for all classes at once
+                    loadStudentOptions();
+                })
+                .catch(error => console.error('Error fetching classes:', error));
+        }
+
+        function loadStudentsForClass(classId) {
+            fetch(`/api/class-student/class/${classId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const studentList = document.getElementById(`studentList-${classId}`);
+                    studentList.innerHTML = '';
+                    if (data.length === 0) {
+                        studentList.innerHTML = '<li>No students in this class.</li>';
+                    } else {
+                        data.forEach(student => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                                <span>${student.firstName} ${student.lastName} (${student.email})</span>
+                                <span class="remove-student" onclick="removeStudentFromClass(${classId}, ${student.id})">
+                                    <i class="fas fa-user-minus"></i> Remove
+                                </span>
+                            `;
+                            studentList.appendChild(li);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching students for class:', error);
+                    const studentList = document.getElementById(`studentList-${classId}`);
+                    studentList.innerHTML = '<li>Error loading students.</li>';
+                });
+        }
+
+        function loadStudentOptions() {
+            fetch('/api/students')
+                .then(response => response.json())
+                .then(data => {
+                    const studentSelects = document.querySelectorAll('[id^="studentSelect-"]');
+                    studentSelects.forEach(select => {
+                        select.innerHTML = '<option value="">Select a student</option>';
+                        data.forEach(student => {
+                            select.innerHTML += `<option value="${student.id}">${student.firstName} ${student.lastName} (${student.email})</option>`;
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching students:', error);
+                    const studentSelects = document.querySelectorAll('[id^="studentSelect-"]');
+                    studentSelects.forEach(select => {
+                        select.innerHTML = '<option value="">Error loading students</option>';
+                    });
+                });
+        }
+
+        function addStudentToClass(classId) {
+            const studentId = document.getElementById(`studentSelect-${classId}`).value;
+
+            if (!studentId) {
+                showMessage('Please select a student to add.', 'error');
+                return;
+            }
+
+            fetch(`/api/class-student/${classId}/${studentId}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        showMessage('Student added to class successfully.', 'success');
+                        loadStudentsForClass(classId);
+                    } else {
+                        showMessage('Failed to add student to class.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding student to class:', error);
+                    showMessage('An error occurred while adding the student to the class.', 'error');
+                });
+        }
+
+        function removeStudentFromClass(classId, studentId) {
+            fetch(`/api/class-student/${classId}/${studentId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        showMessage('Student removed from class successfully.', 'success');
+                        loadStudentsForClass(classId);
+                    } else {
+                        showMessage('Failed to remove student from class.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing student from class:', error);
+                    showMessage('An error occurred while removing the student from the class.', 'error');
+                });
+        }
+
+        function showMessage(message, type) {
+            const messageArea = document.createElement('div');
+            messageArea.textContent = message;
+            messageArea.className = `message ${type}`;
+            document.querySelector('.submenu-content').prepend(messageArea);
+            setTimeout(() => {
+                messageArea.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

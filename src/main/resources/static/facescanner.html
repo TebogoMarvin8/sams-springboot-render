@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Descriptor Scanner</title>
+  <script defer src="face-api.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      max-width: 800px;
+      width: 100%;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    video {
+      display: block;
+      margin: 0 auto 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 100%;
+      height: auto;
+    }
+    #status {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Face Descriptor Scanner</h1>
+    <video id="video" width="720" height="560" autoplay muted></video>
+    <div id="status">Initializing camera...</div>
+    <div id="loading" class="loading">Processing...</div>
+  </div>
+  <script>
+    const video = document.getElementById('video');
+    const status = document.getElementById('status');
+    const loading = document.getElementById('loading');
+
+    async function loadModels() {
+      try {
+        status.textContent = "Loading models...";
+        await faceapi.nets.tinyFaceDetector.loadFromUri('./models');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
+        await faceapi.nets.faceRecognitionNet.loadFromUri('./models');
+        await faceapi.nets.faceExpressionNet.loadFromUri('./models');
+        console.log("Models loaded successfully");
+        status.textContent = "Models loaded. Starting video...";
+        startVideo();
+      } catch (error) {
+        console.error("Error loading models:", error);
+        status.textContent = "Error loading models. Please refresh and try again.";
+      }
+    }
+
+    function startVideo() {
+      navigator.mediaDevices.getUserMedia({ video: {} })
+        .then(stream => {
+          video.srcObject = stream;
+          video.addEventListener('play', () => {
+            status.textContent = "Video started. Preparing to scan...";
+            setTimeout(captureAndSaveDescriptors, 2000); // Wait 2 seconds before capturing
+          });
+        })
+        .catch(err => {
+          console.error("Error accessing webcam:", err);
+          status.textContent = "Unable to access the webcam. Please make sure it's enabled.";
+        });
+    }
+
+    async function captureAndSaveDescriptors() {
+      try {
+        loading.style.display = 'block';
+        status.textContent = "Scanning face...";
+
+        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceDescriptors();
+
+        if (detections.length === 0) {
+          status.textContent = "No faces detected. Please ensure your face is visible.";
+          loading.style.display = 'none';
+          return;
+        }
+
+        const faceDescriptor = detections[0].descriptor;
+        if (!faceDescriptor) {
+          status.textContent = "Failed to extract face descriptor. Please try again.";
+          loading.style.display = 'none';
+          return;
+        }
+
+        const descriptorJson = JSON.stringify(faceDescriptor);
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('studentId');
+
+        if (!studentId) {
+          status.textContent = "Student ID is missing. Please check the URL.";
+          loading.style.display = 'none';
+          return;
+        }
+
+        status.textContent = "Saving face descriptor...";
+
+        const response = await fetch(`/api/students/${studentId}/saveFaceDescriptors`, {
+          method: 'POST',
+          body: JSON.stringify({ descriptor: descriptorJson }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          status.textContent = "Face descriptor saved successfully!";
+          setTimeout(() => {
+            window.location.href = 'successRegister.html';
+          }, 1500);
+        } else {
+          status.textContent = "Failed to save face descriptor. Please try again.";
+        }
+      } catch (error) {
+        console.error("Error capturing descriptors:", error);
+        status.textContent = "An error occurred. Please try again.";
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    window.addEventListener('load', loadModels);
+  </script>
+</body>
+</html>

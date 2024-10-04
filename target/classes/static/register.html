@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Register - Learning Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --background-color: #f0f4f8;
+            --text-color: #333;
+            --error-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-signin {
+            width: 100%;
+        }
+
+        .form-signin-heading {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-control {
+            border: none;
+            border-bottom: 2px solid #ddd;
+            border-radius: 0;
+            padding: 0.75rem 0;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 30px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a7bd5;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group i {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding-left: 35px;
+        }
+
+        .form-check {
+            margin-top: 1rem;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+        .form-check a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .form-check a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form class="form-signin" id="registerForm" novalidate>
+            <h2 class="form-signin-heading">Join Our Community</h2>
+            <div class="alert alert-danger" role="alert" style="display:none;" id="error-message"></div>
+
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-user-tag"></i>
+                <select id="role" name="role" class="form-control" required>
+                    <option value="" disabled selected>Select your role</option>
+                    <option value="STUDENT">Student</option>
+                    <option value="INSTRUCTOR">Instructor</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </div>
+
+            <div id="additionalFields" style="display:none;">
+                <div class="input-group">
+                    <i class="fas fa-user-circle"></i>
+                    <input type="text" id="firstName" name="firstName" class="form-control" placeholder="First Name" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-user-circle"></i>
+                    <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+                </div>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="terms" required>
+                <label class="form-check-label" for="terms">I agree to the <a href="/terms-and-conditions.html" target="_blank">Terms and Conditions</a></label>
+            </div>
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
+        </form>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('role').addEventListener('change', function () {
+            const additionalFields = document.getElementById('additionalFields');
+            if (this.value) {
+                additionalFields.style.display = 'block';
+            } else {
+                additionalFields.style.display = 'none';
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            if (!this.checkValidity()) {
+                event.stopPropagation();
+                this.classList.add('shake');
+                setTimeout(() => this.classList.remove('shake'), 500);
+                return;
+            }
+
+            const role = document.getElementById('role').value;
+
+            const data = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: role,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value
+            };
+
+            fetch('/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json().then(data => {
+                        const studentId = data.studentId;
+                        if (role === 'STUDENT') {
+                            window.location.href = `/facescanner.html?studentId=${studentId}`;
+                        } else {
+                            window.location.href = 'login.html';
+                        }
+                    });
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+            })
+            .catch(error => {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            });
+        });
+
+        // Custom form validation
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (!this.checkValidity()) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

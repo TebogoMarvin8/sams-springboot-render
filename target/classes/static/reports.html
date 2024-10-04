@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMS Attendance Reports</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Enhanced Attendance Reports</h1>
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="reportType">
+                    Report Type
+                </label>
+                <select id="reportType"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Select report type</option>
+                    <option value="class">By Class</option>
+                    <option value="student">By Student</option>
+                    <option value="date">By Date</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <select id="reportValue"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    style="display:none;">
+                    <option value="">Select value</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <input type="date" id="reportDate"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    style="display:none;" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="chartType">
+                    Chart Type
+                </label>
+                <select id="chartType"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="bar">Bar Chart</option>
+                    <option value="line">Line Chart</option>
+                    <option value="pie">Pie Chart</option>
+                </select>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button id="downloadPDF"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    type="button">
+                    Download PDF
+                </button>
+                <button id="downloadCSV"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    type="button">
+                    Download CSV
+                </button>
+                <button id="downloadExcel"
+                    class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    type="button">
+                    Download Excel
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div class="chart-container">
+                <canvas id="attendanceChart"></canvas>
+            </div>
+        </div>
+
+        <div id="detailsContainer" class="bg-white shadow-md rounded px-8 pt-6 pb-8">
+            <h2 class="text-2xl font-bold mb-4">Attendance Details</h2>
+            <div id="attendanceTable"></div>
+        </div>
+    </div>
+
+    <script>
+        const reportTypeSelect = document.getElementById('reportType');
+        const reportValueSelect = document.getElementById('reportValue');
+        const reportDateInput = document.getElementById('reportDate');
+        const chartTypeSelect = document.getElementById('chartType');
+        const downloadPDFButton = document.getElementById('downloadPDF');
+        const downloadCSVButton = document.getElementById('downloadCSV');
+        const downloadExcelButton = document.getElementById('downloadExcel');
+        const detailsContainer = document.getElementById('detailsContainer');
+        const attendanceTable = document.getElementById('attendanceTable');
+        let attendanceChart;
+        let currentData;
+
+        reportTypeSelect.addEventListener('change', handleReportTypeChange);
+        reportValueSelect.addEventListener('change', fetchData);
+        reportDateInput.addEventListener('change', fetchData);
+        chartTypeSelect.addEventListener('change', () => renderChart(currentData, reportTypeSelect.value));
+        downloadPDFButton.addEventListener('click', downloadPDF);
+        downloadCSVButton.addEventListener('click', downloadCSV);
+        downloadExcelButton.addEventListener('click', downloadExcel);
+
+        async function handleReportTypeChange() {
+            const reportType = reportTypeSelect.value;
+
+            reportValueSelect.style.display = 'none';
+            reportDateInput.style.display = 'none';
+            reportValueSelect.innerHTML = '<option value="">Select value</option>';
+
+            if (reportType === 'class') {
+                await populateClasses();
+                reportValueSelect.style.display = 'block';
+            } else if (reportType === 'student') {
+                await populateStudents();
+                reportValueSelect.style.display = 'block';
+            } else if (reportType === 'date') {
+                reportDateInput.style.display = 'block';
+            }
+        }
+
+        async function populateClasses() {
+            try {
+                const response = await fetch('http://localhost:8080/api/admins/classes');
+                const classes = await response.json();
+
+                classes.forEach(classItem => {
+                    reportValueSelect.innerHTML += `
+                        <option value="${classItem.id}">${classItem.className} - ${classItem.course.courseName}</option>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error fetching classes:', error);
+            }
+        }
+
+        async function populateStudents() {
+            try {
+                const response = await fetch('http://localhost:8080/api/students');
+                const students = await response.json();
+
+                students.forEach(student => {
+                    reportValueSelect.innerHTML += `
+                        <option value="${student.id}">${student.firstName} ${student.lastName}</option>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        }
+
+        async function fetchData() {
+            const reportType = reportTypeSelect.value;
+            const reportValue = reportValueSelect.value || reportDateInput.value;
+
+            if (!reportType || !reportValue) return;
+
+            try {
+                let url;
+                if (reportType === 'class') {
+                    url = `http://localhost:8080/api/instructors/attendance/class/${reportValue}`;
+                } else if (reportType === 'student') {
+                    url = `http://localhost:8080/api/instructors/attendance/student/${reportValue}`;
+                } else if (reportType === 'date') {
+                    url = `http://localhost:8080/api/instructors/attendance/date?dateTime=${reportValue}`;
+                }
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!Array.isArray(data)) {
+                    throw new Error('Data is not an array');
+                }
+
+                currentData = data;
+                renderChart(data, reportType);
+                renderAttendanceTable(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                detailsContainer.innerHTML = '<p class="text-red-500 text-center">Error fetching data. Please try again.</p>';
+            }
+        }
+
+        function renderChart(data, reportType) {
+            const chartData = prepareChartData(data, reportType);
+            const chartType = chartTypeSelect.value;
+
+            if (attendanceChart) {
+                attendanceChart.destroy();
+            }
+
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            attendanceChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: chartData.label,
+                        data: chartData.data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Count'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function prepareChartData(data, reportType) {
+            if (reportType === 'class') {
+                const studentCounts = data.reduce((acc, record) => {
+                    const studentName = `${record.student.firstName} ${record.student.lastName}`;
+                    acc[studentName] = (acc[studentName] || 0) + 1;
+                    return acc;
+                }, {});
+                return {
+                    labels: Object.keys(studentCounts),
+                    data: Object.values(studentCounts),
+                    label: 'Attendance Count per Student'
+                };
+            } else if (reportType === 'student') {
+                const classCounts = data.reduce((acc, record) => {
+                    acc[record.clazz.className] = (acc[record.clazz.className] || 0) + 1;
+                    return acc;
+                }, {});
+                return {
+                    labels: Object.keys(classCounts),
+                    data: Object.values(classCounts),
+                    label: 'Attendance Count per Class'
+                };
+            } else if (reportType === 'date') {
+                const classCounts = data.reduce((acc, record) => {
+                    acc[record.clazz.className] = (acc[record.clazz.className] || 0) + 1;
+                    return acc;
+                }, {});
+                return {
+                    labels: Object.keys(classCounts),
+                    data: Object.values(classCounts),
+                    label: 'Student Count per Class'
+                };
+            }
+            return { labels: [], data: [], label: '' };
+        }
+
+        function renderAttendanceTable(data) {
+            const groupedData = data.reduce((acc, record) => {
+                const studentName = `${record.student.firstName} ${record.student.lastName}`;
+                if (!acc[studentName]) {
+                    acc[studentName] = [];
+                }
+                acc[studentName].push(record);
+                return acc;
+            }, {});
+
+            let tableHTML = `
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Attendance Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            for (const [studentName, records] of Object.entries(groupedData)) {
+                tableHTML += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-sm leading-5 font-medium text-gray-900" rowspan="${records.length}">${studentName}</td>
+                        ${records.map((record, index) => `
+                            ${index !== 0 ? '<tr>' : ''}
+                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-sm leading-5 text-gray-500">${record.clazz.className}</td>
+                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-sm leading-5 text-gray-500">${record.clazz.course.courseName}</td>
+                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-sm leading-5 text-gray-500">${record.attendanceTime}</td>
+                            ${index !== 0 ? '</tr>' : ''}
+                        `).join('')}
+                    </tr>
+                `;
+            }
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            attendanceTable.innerHTML = tableHTML;
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.text("Attendance Report", 10, 10);
+            doc.addImage(attendanceChart.toBase64Image(), 'PNG', 10, 20, 190, 100);
+
+            let yPos = 130;
+            currentData.forEach(record => {
+                doc.text(`${record.student.firstName} ${record.student.lastName} - ${record.clazz.className} - ${record.attendanceTime}`, 10, yPos);
+                yPos += 10;
+                if (yPos > 280) {
+                    doc.addPage();
+                    yPos = 10;
+                }
+            });
+
+            doc.save("attendance_report.pdf");
+        }
+
+        function downloadCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Student Name,Class,Course,Attendance Time\n";
+
+            currentData.forEach(record => {
+                csvContent += `${record.student.firstName} ${record.student.lastName},${record.clazz.className},${record.clazz.course.courseName},${record.attendanceTime}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "attendance_report.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+
+        function downloadExcel() {
+            const workSheet = XLSX.utils.json_to_sheet(currentData.map(record => ({
+                'Student Name': `${record.student.firstName} ${record.student.lastName}`,
+                'Class': record.clazz.className,
+                'Course': record.clazz.course.courseName,
+                'Attendance Time': record.attendanceTime
+            })));
+
+            const workBook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workBook, workSheet, "Attendance");
+            XLSX.writeFile(workBook, "attendance_report.xlsx");
+        }
+    </script>
+</body>
+
+</html>

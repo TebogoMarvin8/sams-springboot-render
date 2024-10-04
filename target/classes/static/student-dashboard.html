@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMS - Student Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --hover-color: #3a7bd5;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        header h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dashboard-section {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .dashboard-section h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-buttons button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background-color: var(--primary-color);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .dashboard-buttons button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-buttons button i {
+            margin-right: 0.5rem;
+        }
+
+        .submenu {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .submenu.active {
+            display: block;
+        }
+
+        .submenu-content {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .submenu h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .submenu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .submenu ul li {
+            background-color: #fff;
+            margin-bottom: 0.5rem;
+            padding: 0.8rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #attendance-section form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #attendance-section select,
+        #attendance-section button {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        #attendance-section button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #attendance-section button:hover {
+            background-color: var(--hover-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-buttons {
+                flex-direction: column;
+            }
+
+            .dashboard-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Student Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#" onclick="logout(event)">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main id="dashboard">
+        <section class="dashboard-section">
+            <h2 id="welcomeMessage"></h2>
+
+            <div class="dashboard-buttons">
+                <button onclick="toggleSubmenu('courses')"><i class="fas fa-book"></i> View All Courses</button>
+                <button onclick="toggleSubmenu('instructors')"><i class="fas fa-chalkboard-teacher"></i> View All
+                    Instructors</button>
+                <button onclick="toggleSubmenu('classes')"><i class="fas fa-chalkboard"></i> View All Classes</button>
+                <button onclick="redirectToAttendance()"><i class="fas fa-calendar-check"></i> Attendance Management</button>
+            </div>
+
+            <div id="courses" class="submenu">
+                <div class="submenu-content">
+                    <h3>All Courses</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Course Code</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="instructors" class="submenu">
+                <div class="submenu-content">
+                    <h3>All Instructors</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Instructor Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody id="instructorsList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="classes" class="submenu">
+                <div class="submenu-content">
+                    <h3>All Classes</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Class Name</th>
+                                <th>Course</th>
+                                <th>Instructor</th>
+                                <th>Day</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesList"></tbody>
+                    </table>
+                </div>
+
+               
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Student Attendance Management System</p>
+    </footer>
+
+    <script>
+        window.onload = function () {
+            fetch("/api/users/session-info")
+                .then(response => response.json())
+                .then(data => {
+                    const welcomeMessage = document.getElementById("welcomeMessage");
+                    welcomeMessage.textContent = "Welcome back, " + data.studentName;
+                })
+                .catch(error => console.error("Error fetching session info:", error));
+        }
+
+        function logout(event) {
+            // Prevent the default link action (which would navigate away)
+            event.preventDefault();
+            alert("You have been logged out.");
+            window.location.href = 'login.html';
+            sessionStorage.clear();
+        }
+
+        function redirectToAttendance() {
+            window.location.href = 'attendance.html';
+        }
+        
+        // Update the toggleSubmenu function
+        function toggleSubmenu(section) {
+            const submenus = document.querySelectorAll('.submenu');
+            submenus.forEach(menu => menu.classList.remove('active'));
+
+            const selectedMenu = document.getElementById(section);
+            if (selectedMenu) {
+                selectedMenu.classList.add('active');
+            } else {
+                console.error(`Submenu not found for section: ${section}`);
+            }
+
+            if (section === 'courses') viewCourses();
+            if (section === 'instructors') viewInstructors();
+            if (section === 'classes') viewClasses();
+        }
+
+
+        function viewCourses() {
+            fetch('/api/admins/courses')
+                .then(response => response.json())
+                .then(data => {
+                    const coursesList = document.getElementById('coursesList');
+                    coursesList.innerHTML = '';
+                    data.forEach(course => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${course.courseName}</td>
+                            <td>${course.courseCode}</td>
+                        `;
+                        coursesList.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching courses:', error));
+        }
+
+        function viewInstructors() {
+            fetch('/api/instructors')
+                .then(response => response.json())
+                .then(data => {
+                    const instructorsList = document.getElementById('instructorsList');
+                    instructorsList.innerHTML = '';
+                    data.forEach(instructor => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${instructor.firstName} ${instructor.lastName}</td>
+                            <td>${instructor.email}</td>
+                        `;
+                        instructorsList.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching instructors:', error));
+        }
+
+        function viewClasses() {
+            fetch('/api/admins/classes')
+                .then(response => response.json())
+                .then(data => {
+                    const classesList = document.getElementById('classesList');
+                    classesList.innerHTML = '';  // Clear previous entries
+                    data.forEach(cls => {
+                        const instructorName = cls.instructor ? `${cls.instructor.firstName} ${cls.instructor.lastName}` : 'No Instructor';
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                    <td>${cls.className}</td>
+                    <td>${cls.course.courseName} (${cls.course.courseCode})</td>
+                    <td>${instructorName}</td>
+                    <td>${cls.dayOfWeek || 'N/A'}</td>
+                    <td>${cls.startTime || 'N/A'}</td>
+                    <td>${cls.endTime || 'N/A'}</td>
+                `;
+                        classesList.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching classes:', error));
+        }
+
+    </script>
+</body>
+
+</html>
