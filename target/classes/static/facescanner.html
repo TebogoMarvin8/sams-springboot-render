@@ -1,76 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Face Descriptor Scanner</title>
   <script defer src="face-api.js"></script>
   <style>
+    :root {
+      --primary-color: #2c3e50;
+      --background-color: #f4f4f4;
+      --container-bg: #fff;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --spinner-color: #3498db;
+    }
+
     body {
       font-family: 'Arial', sans-serif;
       line-height: 1.6;
-      color: #333;
-      background-color: #f4f4f4;
+      color: var(--primary-color);
+      background-color: var(--background-color);
       margin: 0;
       padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      box-sizing: border-box;
     }
+
     .container {
-      background-color: #fff;
+      background-color: var(--container-bg);
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px var(--shadow-color);
       padding: 30px;
       max-width: 800px;
       width: 100%;
+      box-sizing: border-box;
     }
+
     h1 {
-      color: #2c3e50;
+      color: var(--primary-color);
       text-align: center;
       margin-bottom: 20px;
+      font-size: 1.8rem;
     }
+
     video {
       display: block;
       margin: 0 auto 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px var(--shadow-color);
       max-width: 100%;
       height: auto;
     }
-    #status {
+
+    #status,
+    #loading {
       text-align: center;
       margin-top: 20px;
       font-weight: bold;
     }
+
     .loading {
       display: none;
-      text-align: center;
-      margin-top: 20px;
     }
+
     .loading::after {
       content: '';
       display: inline-block;
       width: 20px;
       height: 20px;
       border: 2px solid #f3f3f3;
-      border-top: 2px solid #3498db;
+      border-top: 2px solid var(--spinner-color);
       border-radius: 50%;
       animation: spin 1s linear infinite;
       vertical-align: middle;
       margin-left: 10px;
     }
+
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      #status,
+      #loading {
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Face Descriptor Scanner</h1>
-    <video id="video" width="720" height="560" autoplay muted></video>
+    <video id="video" autoplay muted></video>
     <div id="status">Initializing camera...</div>
     <div id="loading" class="loading">Processing...</div>
   </div>
@@ -96,7 +139,7 @@
     }
 
     function startVideo() {
-      navigator.mediaDevices.getUserMedia({ video: {} })
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
         .then(stream => {
           video.srcObject = stream;
           video.addEventListener('play', () => {
@@ -171,4 +214,5 @@
     window.addEventListener('load', loadModels);
   </script>
 </body>
+
 </html>

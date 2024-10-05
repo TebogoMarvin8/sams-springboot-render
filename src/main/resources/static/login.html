@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -52,6 +53,7 @@
             margin-bottom: 1rem;
             transition: border-color 0.3s;
             width: 100%;
+            font-size: 1rem;
         }
 
         .form-control:focus {
@@ -84,6 +86,7 @@
             border-radius: 4px;
             margin-bottom: 1rem;
             display: none;
+            font-size: 0.9rem;
         }
 
         .input-group {
@@ -104,38 +107,64 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
         }
 
         .shake {
             animation: shake 0.5s;
         }
+
+        @media (max-width: 600px) {
+            .form-signin-heading {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <form class="form-signin" id="loginForm">
-            <h2 class="form-signin-heading">Welcome Back</h2>
+        <form class="form-signin" id="loginForm" aria-labelledby="loginHeading">
+            <h2 class="form-signin-heading" id="loginHeading">Welcome Back</h2>
             <div class="alert alert-danger" role="alert" id="error-message"></div>
-            
+
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required
+                    autofocus aria-required="true">
             </div>
-            
+
             <div class="input-group">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                    required aria-required="true">
             </div>
-            
+
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
     </div>
 
     <script>
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
+        document.getElementById("loginForm").addEventListener("submit", function (event) {
             event.preventDefault();
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
@@ -146,18 +175,18 @@
                 },
                 body: JSON.stringify({ username: username, password: password })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
-                } else if (data.error) {
-                    showError(data.error);
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                showError("An unexpected error occurred. Please try again.");
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else if (data.error) {
+                        showError(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    showError("An unexpected error occurred. Please try again.");
+                });
         });
 
         function showError(message) {
@@ -165,7 +194,7 @@
             errorMessage.textContent = message;
             errorMessage.style.display = "block";
             document.querySelector('.form-signin').classList.add('shake');
-            
+
             setTimeout(() => {
                 errorMessage.style.display = "none";
                 document.querySelector('.form-signin').classList.remove('shake');
@@ -173,4 +202,5 @@
         }
     </script>
 </body>
+
 </html>

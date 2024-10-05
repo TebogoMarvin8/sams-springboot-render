@@ -63,7 +63,7 @@ function startVideo() {
       updateStatus("Video started. Preparing face recognition...", "loading");
     })
     .catch(err => {
-      updateStatus("Error accessing the webcam. Please check your camera permissions.", "error");
+      updateStatus("Error accessing the webcam. Please check your camera permissions ,or reload page", "error");
       console.error("Error accessing the webcam:", err);
     });
 
@@ -99,7 +99,7 @@ video.addEventListener('play', () => {
     }
 
     if (knownDescriptors.length > 0) {
-      const faceMatcher = new faceapi.FaceMatcher(knownDescriptors, 0.6);
+      const faceMatcher = new faceapi.FaceMatcher(knownDescriptors, 1); //Detection Threshold
       const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
       results.forEach((result, i) => {

@@ -4,7 +4,6 @@ C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\model\Course.
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\repository\StudentRepository.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\model\ClassStudentRelationship.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\repository\AdminRepository.java
-C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\controller\ResourceNotFoundException.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\model\Instructor.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\repository\RFIDTagRepository.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\model\RFIDTag.java
@@ -30,7 +29,6 @@ C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\repository\Cl
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\repository\UserRepository.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\controller\AttendanceController.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\repository\AttendanceRepository.java
-C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\controller\DashboardController.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\model\Admin.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\model\ClassStudentId.java
 C:\Users\tebog\Documents\samsrender\NEWSAMS\src\main\java\com\sams\model\Attendance.java

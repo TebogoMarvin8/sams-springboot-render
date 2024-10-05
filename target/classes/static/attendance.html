@@ -31,14 +31,14 @@
         header {
             background-color: var(--primary-color);
             color: #fff;
-            padding: 1rem 0;
+            padding: 1rem;
             box-shadow: var(--box-shadow);
         }
 
         header h1 {
             margin: 0;
             text-align: center;
-            font-size: 2rem;
+            font-size: 1.5rem;
         }
 
         nav ul {
@@ -47,10 +47,11 @@
             margin: 1rem 0 0;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         nav ul li {
-            margin: 0 15px;
+            margin: 0.5rem;
         }
 
         nav ul li a {
@@ -58,15 +59,18 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         nav ul li a:hover {
-            color: var(--secondary-color);
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         main {
             flex: 1;
-            padding: 2rem;
+            padding: 1rem;
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
@@ -75,7 +79,7 @@
 
         .dashboard-section {
             background-color: #fff;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 8px;
             box-shadow: var(--box-shadow);
             text-align: center;
@@ -84,6 +88,7 @@
         .dashboard-section h2 {
             color: var(--secondary-color);
             margin-bottom: 1.5rem;
+            font-size: 1.3rem;
         }
 
         .dashboard-buttons {
@@ -105,6 +110,9 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
         }
 
         .dashboard-buttons button:hover {
@@ -136,6 +144,7 @@
             color: var(--secondary-color);
             margin-top: 0;
             margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
 
         .submenu ul {
@@ -182,51 +191,23 @@
 
         footer {
             text-align: center;
-            padding: 1rem 0;
+            padding: 1rem;
             background-color: var(--secondary-color);
             color: #fff;
+            font-size: 0.9rem;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            box-shadow: var(--box-shadow);
-        }
-
-        th,
-        td {
-            padding: 1rem;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-buttons {
-                flex-direction: column;
-            }
-
-            .dashboard-buttons button {
-                width: 100%;
-            }
-        }
-
-        /* Update these styles for the grouped table */
         .attendance-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            font-size: 0.9rem;
         }
 
         .attendance-table th,
         .attendance-table td {
             border: 1px solid #ddd;
-            padding: 12px;
+            padding: 0.8rem;
             text-align: left;
         }
 
@@ -257,13 +238,58 @@
         .nested-table th,
         .nested-table td {
             border: none;
-            padding: 8px;
+            padding: 0.6rem;
             text-align: left;
         }
 
         .nested-table th {
             background-color: #f8f8f8;
             color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            .dashboard-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .dashboard-buttons button {
+                width: 100%;
+            }
+
+            .attendance-table,
+            .nested-table {
+                font-size: 0.8rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td,
+            .nested-table th,
+            .nested-table td {
+                padding: 0.6rem;
+            }
+
+            .submenu-content {
+                padding: 1rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .dashboard-buttons {
+                flex-direction: row;
+            }
+
+            .dashboard-buttons button {
+                width: auto;
+            }
         }
     </style>
 </head>
@@ -283,25 +309,27 @@
             <h2 id="welcomeMessage"></h2>
 
             <div class="dashboard-buttons">
-                <button onclick="toggleSubmenu('viewAttendance')"><i class="fas fa-calendar-check"></i> View Attendance
-                    Records</button>
+                <button onclick="toggleSubmenu('viewAttendance')"><i class="fas fa-calendar-check"></i> View
+                    Attendance</button>
                 <button onclick="toggleSubmenu('markAttendance')"><i class="fas fa-user-check"></i> Mark
                     Attendance</button>
             </div>
             <div id="viewAttendance" class="submenu">
                 <div class="submenu-content">
                     <h3>Attendance Records</h3>
-                    <table id="attendanceTable" class="attendance-table">
-                        <thead>
-                            <tr>
-                                <th>Class Name</th>
-                                <th>Course Name</th>
-                                <th>Instructor</th>
-                                <th>Attendance Time</th>
-                            </tr>
-                        </thead>
-                        <tbody id="attendanceTableBody"></tbody>
-                    </table>
+                    <div style="overflow-x: auto;">
+                        <table id="attendanceTable" class="attendance-table">
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Course Name</th>
+                                    <th>Instructor</th>
+                                    <th>Attendance Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

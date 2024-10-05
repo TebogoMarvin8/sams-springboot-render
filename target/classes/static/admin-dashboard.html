@@ -33,18 +33,21 @@
         .dashboard-container {
             display: flex;
             min-height: 100vh;
+            flex-direction: row;
         }
 
         .sidebar {
             width: 250px;
+            max-width: 100%;
             background-color: #2c3e50;
             color: white;
             padding: 20px;
+            transition: width 0.3s;
         }
 
         .sidebar h1 {
-            font-size: 24px;
-            margin-bottom: 30px;
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
             text-align: center;
         }
 
@@ -53,18 +56,19 @@
         }
 
         .sidebar-menu li {
-            margin-bottom: 10px;
+            margin-bottom: 0.625rem;
         }
 
         .sidebar-menu button {
             width: 100%;
-            padding: 10px;
+            padding: 0.625rem;
             text-align: left;
             background-color: transparent;
             border: none;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 1rem;
         }
 
         .sidebar-menu button:hover {
@@ -72,36 +76,37 @@
         }
 
         .sidebar-menu i {
-            margin-right: 10px;
+            margin-right: 0.625rem;
         }
 
         .main-content {
             flex-grow: 1;
-            padding: 30px;
+            padding: 1.875rem;
             overflow-y: auto;
         }
 
         .dashboard-section {
             background-color: white;
-            border-radius: 8px;
+            border-radius: 0.5rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: 1.25rem;
+            margin-bottom: 1.875rem;
+            transition: padding 0.3s;
         }
 
         .dashboard-section h2 {
             color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
         }
 
         form div {
-            margin-bottom: 15px;
+            margin-bottom: 0.9375rem;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 0.3125rem;
             font-weight: 500;
         }
 
@@ -110,20 +115,20 @@
         input[type="number"],
         select {
             width: 100%;
-            padding: 10px;
+            padding: 0.625rem;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 16px;
+            border-radius: 0.25rem;
+            font-size: 1rem;
         }
 
         button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.25rem;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1rem;
             transition: background-color 0.3s;
         }
 
@@ -135,27 +140,32 @@
             background-color: #e74c3c;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.25rem;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1rem;
             transition: background-color 0.3s;
         }
 
-        .cancel-button:hover {
-            background-color: #c0392b;
+        /* New Table Responsive Style */
+        .table-responsive {
+            overflow-x: auto;
+            /* Enable horizontal scrolling */
+            margin-top: 1.25rem;
+            /* Add some margin to separate from previous content */
+            border: 1px solid var(--border-color);
+            /* Optional: to visually distinguish the scroll area */
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
         th,
         td {
             border: 1px solid var(--border-color);
-            padding: 12px;
+            padding: 0.75rem;
             text-align: left;
         }
 
@@ -166,10 +176,10 @@
 
         .edit-button,
         .delete-button {
-            padding: 6px 12px;
-            margin-right: 5px;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 0.375rem 0.75rem;
+            margin-right: 0.3125rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
         }
 
         .edit-button {
@@ -188,9 +198,45 @@
             background-color: #c0392b;
         }
 
-        #edit-student-form,
-        #edit-instructor-form {
-            display: none;
+        /* Media Queries for Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-width: 100%;
+                padding: 15px 10px;
+                position: relative;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            button {
+                font-size: 0.875rem;
+            }
+
+            .dashboard-section h2 {
+                font-size: 1.25rem;
+            }
+
+            .sidebar h1 {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar-menu button {
+                font-size: 0.875rem;
+            }
+
+            .edit-button,
+            .delete-button {
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -217,7 +263,8 @@
                 </li>
                 <li><button onclick="showSection('manage-tags-section')"><i class="fas fa-id-card"></i> Manage
                         Tags</button></li>
-            <li><button onclick="logout()" style="background-color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+                <li><button onclick="logout()" style="background-color: #e74c3c;"><i class="fas fa-sign-out-alt"></i>
+                        Logout</button></li>
                 <li><button onclick="hideAllSections()"><i class="fas fa-times"></i> Close All</button></li>
             </ul>
         </aside>
@@ -225,19 +272,21 @@
             <!-- Courses Table Section -->
             <section id="courses-table-section" class="dashboard-section" style="display: none;">
                 <h2>Manage Courses</h2>
-                <table id="coursesTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Course Name</th>
-                            <th>Course Code</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table id="coursesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Course Name</th>
+                                <th>Course Code</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <!-- Edit Course Form Section -->
@@ -266,23 +315,25 @@
             <!-- Classes Table Section -->
             <section id="classes-table-section" class="dashboard-section" style="display: none;">
                 <h2>Manage Classes</h2>
-                <table id="classesTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Class Name</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Day of Week</th>
-                            <th>Course Name</th>
-                            <th>Course Code</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table id="classesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Class Name</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Day of Week</th>
+                                <th>Course Name</th>
+                                <th>Course Code</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <!-- Edit Class Form Section -->
@@ -419,22 +470,24 @@
             <!-- Students Table Section -->
             <section id="students-table-section" class="dashboard-section">
                 <h2>Manage Students</h2>
-                <table id="studentsTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Email</th>
-                            <th>Tag Number</th>
-                            <th>Username</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Tag Number</th>
+                                <th>Username</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <!-- Edit Student Form Section -->
@@ -479,20 +532,22 @@
             <!-- Instructors Table Section -->
             <section id="instructors-table-section" class="dashboard-section" style="display: none;">
                 <h2>Manage Instructors</h2>
-                <table id="instructorsTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Email</th>
-                            <th>Username</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table id="instructorsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <!-- Edit Instructor Form Section -->
@@ -601,7 +656,7 @@
                 populateUnassignedTagsDropdown();
             }
         }
-        
+
         function logout() {
             alert("You have been logged out.");
             window.location.href = 'login.html';
@@ -641,7 +696,7 @@
 
         async function fetchAndDisplayCourses() {
             try {
-                const response = await fetch('http://localhost:8080/api/admins/courses');
+                const response = await fetch('/api/admins/courses');
                 const courses = await response.json();
 
                 const tableBody = document.querySelector('#coursesTable tbody');
@@ -668,7 +723,7 @@
 
         async function showEditCourseForm(courseId) {
             try {
-                const response = await fetch(`http://localhost:8080/api/admins/courses/${courseId}`);
+                const response = await fetch(`/api/admins/courses/${courseId}`);
                 const course = await response.json();
 
                 document.getElementById('editCourseId').value = course.id;
@@ -695,7 +750,7 @@
             const courseCode = document.getElementById('editCourseCode').value;
 
             try {
-                const response = await fetch('http://localhost:8080/api/admins/courses', {
+                const response = await fetch('/api/admins/courses', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -727,7 +782,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/api/admins/courses/${courseId}`, {
+                const response = await fetch(`/api/admins/courses/${courseId}`, {
                     method: 'DELETE'
                 });
 
@@ -745,7 +800,7 @@
 
         async function fetchAndDisplayClasses() {
             try {
-                const response = await fetch('http://localhost:8080/api/admins/classes');
+                const response = await fetch('/api/admins/classes');
                 const classes = await response.json();
 
                 const tableBody = document.querySelector('#classesTable tbody');
@@ -777,7 +832,7 @@
         // New function for populating courses dropdown in the edit form
         async function populateEditCoursesDropdown() {
             try {
-                const response = await fetch('http://localhost:8080/api/admins/courses');
+                const response = await fetch('/api/admins/courses');
                 const courses = await response.json();
 
                 const dropdown = document.getElementById('editCourseDropdown');
@@ -797,7 +852,7 @@
         // Updated showEditClassForm function
         async function showEditClassForm(classId) {
             try {
-                const response = await fetch(`http://localhost:8080/api/admins/classes/${classId}`);
+                const response = await fetch(`/api/admins/classes/${classId}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -839,7 +894,7 @@
             const courseId = document.getElementById('editCourseDropdown').value;
 
             try {
-                const response = await fetch('http://localhost:8080/api/admins/classes', {
+                const response = await fetch('/api/admins/classes', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -879,7 +934,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/api/admins/classes/${classId}`, {
+                const response = await fetch(`/api/admins/classes/${classId}`, {
                     method: 'DELETE'
                 });
 
@@ -902,7 +957,7 @@
 
         async function populateRFIDDropdown() {
             try {
-                const response = await fetch('http://localhost:8080/api/rfid-tags/unassigned');
+                const response = await fetch('/api/rfid-tags/unassigned');
                 const rfidTags = await response.json();
 
                 const dropdown = document.getElementById('rfidTagDropdown'); // Ensure this ID matches
@@ -932,7 +987,7 @@
             };
 
             // Send the POST request to the API endpoint
-            fetch('http://localhost:8080/api/admins/courses', {
+            fetch('/api/admins/courses', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -967,7 +1022,7 @@
 
         async function populateCoursesDropdown() {
             try {
-                const response = await fetch('http://localhost:8080/api/admins/courses'); // Endpoint to fetch courses
+                const response = await fetch('/api/admins/courses'); // Endpoint to fetch courses
                 const courses = await response.json();
 
                 const dropdown = document.getElementById('courseDropdown');
@@ -1007,7 +1062,7 @@
 
             // Send the payload to the server
             try {
-                const response = await fetch('http://localhost:8080/api/admins/classes', {
+                const response = await fetch('/api/admins/classes', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1034,7 +1089,7 @@
 
         async function populateClassesDropdown() {
             try {
-                const response = await fetch('http://localhost:8080/api/admins/classes'); // Endpoint to fetch classes
+                const response = await fetch('/api/admins/classes'); // Endpoint to fetch classes
                 const classes = await response.json();
 
                 const dropdown = document.getElementById('classDropdown');
@@ -1058,7 +1113,7 @@
             const classId = document.getElementById('classDropdown').value;
 
             try {
-                const response = await fetch(`http://localhost:8080/api/admins/classes/${classId}/instructors/${instructorId}`, {
+                const response = await fetch(`/api/admins/classes/${classId}/instructors/${instructorId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1082,7 +1137,7 @@
 
         async function populateInstructorDropdownForAssignment() {
             try {
-                const response = await fetch('http://localhost:8080/api/instructors');
+                const response = await fetch('/api/instructors');
                 const instructors = await response.json();
 
                 const instructorDropdownForAssignment = document.getElementById('instructorDropdownForAssignment');
@@ -1107,7 +1162,7 @@
         }
         async function populateInstructorsDropdown() {
             try {
-                const response = await fetch('http://localhost:8080/api/instructors');
+                const response = await fetch('/api/instructors');
                 const instructors = await response.json();
 
                 const instructorDropdown = document.getElementById('instructorDropdown');
@@ -1128,7 +1183,7 @@
         }
 
         async function fetchAndDisplayStudents() {
-            const response = await fetch('http://localhost:8080/api/students');
+            const response = await fetch('/api/students');
             const students = await response.json();
 
             const tableBody = document.querySelector('#studentsTable tbody');
@@ -1157,7 +1212,7 @@
         async function populateDropdowns() {
             try {
                 // Populate RFID Tags dropdown
-                // const rfidResponse = await fetch('http://localhost:8080/api/rfid-tags');
+                // const rfidResponse = await fetch('/api/rfid-tags');
                 // const rfidTags = await rfidResponse.json();
 
                 // const rfidDropdown = document.getElementById('editRFIDTagDropdown');
@@ -1170,7 +1225,7 @@
                 // });
 
                 //Populate Users dropdown
-                const userResponse = await fetch('http://localhost:8080/api/users');
+                const userResponse = await fetch('/api/users');
                 const users = await userResponse.json();
 
                 const userDropdown = document.getElementById('editUserDropdown');
@@ -1189,7 +1244,7 @@
         async function populateUserDropdownForInstructor() {
             try {
                 // Populate Users dropdown
-                const userResponse = await fetch('http://localhost:8080/api/users');
+                const userResponse = await fetch('/api/users');
                 const users = await userResponse.json();
 
                 const userDropdown = document.getElementById('editUserDropdownInt');
@@ -1210,7 +1265,7 @@
             showStudentsTable();
 
             try {
-                const response = await fetch(`http://localhost:8080/api/students/${studentId}`);
+                const response = await fetch(`/api/students/${studentId}`);
                 const student = await response.json();
 
                 // Populate the edit form with student data
@@ -1263,11 +1318,11 @@
         async function populateRFIDTags(studentId) {
             try {
                 // Fetch unassigned RFID tags
-                const unassignedResponse = await fetch('http://localhost:8080/api/rfid-tags/unassigned');
+                const unassignedResponse = await fetch('/api/rfid-tags/unassigned');
                 const unassignedTags = await unassignedResponse.json();
 
                 // Fetch the student's RFID tag if it exists
-                const studentResponse = await fetch(`http://localhost:8080/api/students/${studentId}`);
+                const studentResponse = await fetch(`/api/students/${studentId}`);
                 const studentData = await studentResponse.json();
 
                 const rfidTagDropdown = document.getElementById('editRFIDTagDropdown');
@@ -1313,14 +1368,14 @@
             try {
 
                 // Fetch existing student data
-                const studentResponse = await fetch(`http://localhost:8080/api/students/${studentId}`);
+                const studentResponse = await fetch(`/api/students/${studentId}`);
                 if (!studentResponse.ok) {
                     throw new Error('Failed to retrieve student details.');
                 }
                 const studentData = await studentResponse.json();
 
                 // Fetch existing user data
-                const userResponse = await fetch(`http://localhost:8080/api/users/${userId}`);
+                const userResponse = await fetch(`/api/users/${userId}`);
                 if (!userResponse.ok) {
                     throw new Error('Failed to retrieve user details.');
                 }
@@ -1345,7 +1400,7 @@
                 };
 
                 // Send the PUT request
-                const response = await fetch('http://localhost:8080/api/admins/students', {
+                const response = await fetch('/api/admins/students', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1373,7 +1428,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/api/students/${studentId}`, {
+                const response = await fetch(`/api/students/${studentId}`, {
                     method: 'DELETE'
                 });
 
@@ -1392,7 +1447,7 @@
         // Fetch and display instructors in the table
         async function fetchAndDisplayInstructors() {
             try {
-                const response = await fetch('http://localhost:8080/api/instructors');
+                const response = await fetch('/api/instructors');
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -1432,7 +1487,7 @@
             showInstructorsTable();
 
             try {
-                const response = await fetch(`http://localhost:8080/api/instructors/${instructorId}`);
+                const response = await fetch(`/api/instructors/${instructorId}`);
                 const instructor = await response.json();
 
                 // Populate instructor data into the form
@@ -1492,7 +1547,7 @@
 
             try {
                 // Fetch the user details to preserve sensitive information
-                const userResponse = await fetch(`http://localhost:8080/api/users/${userId}`);
+                const userResponse = await fetch(`/api/users/${userId}`);
                 if (!userResponse.ok) {
                     throw new Error('Failed to retrieve user details.');
                 }
@@ -1513,7 +1568,7 @@
                 };
 
                 // Send the PUT request to update the instructor
-                const response = await fetch('http://localhost:8080/api/admins/instructors', {
+                const response = await fetch('/api/admins/instructors', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1542,7 +1597,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/api/instructors/${instructorId}`, {
+                const response = await fetch(`/api/instructors/${instructorId}`, {
                     method: 'DELETE'
                 });
 
@@ -1565,7 +1620,7 @@
             const tagNumber = document.getElementById('newTagNumber').value;
 
             try {
-                const response = await fetch('http://localhost:8080/api/rfid-tags', {
+                const response = await fetch('/api/rfid-tags', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1594,7 +1649,7 @@
             const rfidTagId = document.getElementById('unassignedTagDropdown').value;
 
             try {
-                const response = await fetch(`http://localhost:8080/api/admins/students/${studentId}/rfid-tags/${rfidTagId}`, {
+                const response = await fetch(`/api/admins/students/${studentId}/rfid-tags/${rfidTagId}`, {
                     method: 'PUT'
                 });
 
@@ -1615,7 +1670,7 @@
         // Function to populate the students dropdown
         async function populateStudentsDropdown() {
             try {
-                const response = await fetch('http://localhost:8080/api/students');
+                const response = await fetch('/api/students');
                 const students = await response.json();
 
                 const dropdown = document.getElementById('studentDropdown');
@@ -1635,7 +1690,7 @@
         // Function to populate the unassigned RFID tags dropdown
         async function populateUnassignedTagsDropdown() {
             try {
-                const response = await fetch('http://localhost:8080/api/rfid-tags/unassigned');
+                const response = await fetch('/api/rfid-tags/unassigned');
                 const unassignedTags = await response.json();
 
                 const dropdown = document.getElementById('unassignedTagDropdown');

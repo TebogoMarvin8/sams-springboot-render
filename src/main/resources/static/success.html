@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             --background-color: #f0f4f8;
             --text-color: #333;
             --success-color: #2ecc71;
+            --hover-color: #3a7bd5;
         }
 
         body {
@@ -53,6 +55,8 @@
         #message {
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
+            aria-live: polite;
+            /* For accessibility: announce updates */
         }
 
         .btn {
@@ -70,16 +74,17 @@
         }
 
         .btn:hover {
-            background-color: #3a7bd5;
+            background-color: var(--hover-color);
             transform: translateY(-2px);
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <i class="fas fa-check-circle icon"></i>
         <h1>Attendance Marked</h1>
-        <div id="message"></div>
+        <div id="message" aria-live="polite"></div>
         <a href="student-dashboard.html" class="btn">Go to Dashboard</a>
     </div>
 
@@ -95,4 +100,5 @@
         });
     </script>
 </body>
+
 </html>

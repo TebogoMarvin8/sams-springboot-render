@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -54,6 +55,8 @@
             padding: 0.75rem 0;
             margin-bottom: 1rem;
             transition: border-color 0.3s;
+            width: 100%;
+            font-size: 1rem;
         }
 
         .form-control:focus {
@@ -68,6 +71,7 @@
             padding: 0.75rem;
             font-size: 1rem;
             font-weight: bold;
+            width: 100%;
             transition: background-color 0.3s, transform 0.3s;
         }
 
@@ -110,23 +114,48 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
         }
 
         .shake {
             animation: shake 0.5s;
         }
+
         .form-check a {
             color: var(--primary-color);
             text-decoration: none;
         }
+
         .form-check a:hover {
             text-decoration: underline;
         }
+
+        /* Error feedback styles */
+        .is-invalid {
+            border-color: var(--error-color);
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <form class="form-signin" id="registerForm" novalidate>
@@ -135,17 +164,19 @@
 
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required
+                    autofocus aria-required="true">
             </div>
 
             <div class="input-group">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                    required aria-required="true">
             </div>
 
             <div class="input-group">
                 <i class="fas fa-user-tag"></i>
-                <select id="role" name="role" class="form-control" required>
+                <select id="role" name="role" class="form-control" required aria-required="true">
                     <option value="" disabled selected>Select your role</option>
                     <option value="STUDENT">Student</option>
                     <option value="INSTRUCTOR">Instructor</option>
@@ -156,43 +187,43 @@
             <div id="additionalFields" style="display:none;">
                 <div class="input-group">
                     <i class="fas fa-user-circle"></i>
-                    <input type="text" id="firstName" name="firstName" class="form-control" placeholder="First Name" required>
+                    <input type="text" id="firstName" name="firstName" class="form-control" placeholder="First Name"
+                        required aria-required="true">
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-user-circle"></i>
-                    <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name" required>
+                    <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name"
+                        required aria-required="true">
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email" required
+                        aria-required="true">
                 </div>
             </div>
 
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="terms" required>
-                <label class="form-check-label" for="terms">I agree to the <a href="/terms-and-conditions.html" target="_blank">Terms and Conditions</a></label>
+                <label class="form-check-label" for="terms">I agree to the <a href="/terms-and-conditions.html"
+                        target="_blank">Terms and Conditions</a></label>
             </div>
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
-        </form>
         </form>
     </div>
 
     <script>
         document.getElementById('role').addEventListener('change', function () {
             const additionalFields = document.getElementById('additionalFields');
-            if (this.value) {
-                additionalFields.style.display = 'block';
-            } else {
-                additionalFields.style.display = 'none';
-            }
+            additionalFields.style.display = this.value ? 'block' : 'none';
         });
 
         document.getElementById('registerForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
+            // Check for validity
             if (!this.checkValidity()) {
                 event.stopPropagation();
                 this.classList.add('shake');
@@ -200,12 +231,10 @@
                 return;
             }
 
-            const role = document.getElementById('role').value;
-
             const data = {
                 username: document.getElementById('username').value,
                 password: document.getElementById('password').value,
-                role: role,
+                role: document.getElementById('role').value,
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
                 email: document.getElementById('email').value
@@ -218,36 +247,34 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => {
-                if (response.ok) {
-                    return response.json().then(data => {
-                        const studentId = data.studentId;
-                        if (role === 'STUDENT') {
-                            window.location.href = `/facescanner.html?studentId=${studentId}`;
-                        } else {
-                            window.location.href = 'login.html';
-                        }
-                    });
-                } else {
-                    return response.text().then(text => {
-                        throw new Error(text);
-                    });
-                }
-            })
-            .catch(error => {
-                const errorMessage = document.getElementById('error-message');
-                errorMessage.textContent = error.message;
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 5000);
-            });
+                .then(response => {
+                    if (response.ok) {
+                        return response.json().then(data => {
+                            const studentId = data.studentId;
+                            window.location.href = (data.role === 'STUDENT')
+                                ? `/facescanner.html?studentId=${studentId}`
+                                : 'login.html';
+                        });
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                })
+                .catch(error => {
+                    const errorMessage = document.getElementById('error-message');
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 5000);
+                });
         });
 
         // Custom form validation
         const inputs = document.querySelectorAll('input, select');
         inputs.forEach(input => {
-            input.addEventListener('blur', function() {
+            input.addEventListener('blur', function () {
                 if (!this.checkValidity()) {
                     this.classList.add('is-invalid');
                 } else {
@@ -257,4 +284,5 @@
         });
     </script>
 </body>
+
 </html>

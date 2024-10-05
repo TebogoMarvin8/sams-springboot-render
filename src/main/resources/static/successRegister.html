@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             --background-color: #f0f4f8;
             --text-color: #333;
             --success-color: #2ecc71;
+            --hover-color: #3a7bd5;
         }
 
         body {
@@ -70,18 +72,43 @@
         }
 
         .btn:hover {
-            background-color: #3a7bd5;
+            background-color: var(--hover-color);
             transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 0.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <i class="fas fa-check-circle icon"></i>
         <h1>Registration Successful</h1>
-        <p>You have successfully registered for the Student Attendance Management System (SAMS).</p>
-        <p>Thank you for joining us. You can now access your dashboard and start using the system.</p>
+        <p>Your registration for the Student Attendance Management System (SAMS) was successful.</p>
+        <p>Thank you for joining us! You can now access your dashboard and start using the system.</p>
         <a href="login.html" class="btn">Log In</a>
+        <div class="footer">
+            <p>Need help? <a href="index.html" style="color: var(--primary-color);">Return to Home</a></p>
+        </div>
     </div>
 </body>
+
 </html>

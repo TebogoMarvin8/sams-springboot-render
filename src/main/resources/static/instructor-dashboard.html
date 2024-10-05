@@ -21,7 +21,6 @@
             color: var(--text-color);
             line-height: 1.6;
             margin: 0;
-            padding: 0;
         }
 
         header {
@@ -43,10 +42,13 @@
             margin: 1rem 0 0;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
+            /* Allow items to wrap */
         }
 
         nav ul li {
-            margin: 0 15px;
+            margin: 0 10px;
+            /* Reduce space on smaller screens */
         }
 
         nav ul li a {
@@ -71,6 +73,8 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            /* Add distance between sections */
         }
 
         .dashboard-section h2 {
@@ -84,7 +88,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 1rem;
+            gap: 10px;
             margin-bottom: 2rem;
         }
 
@@ -99,6 +103,8 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
+            white-space: nowrap;
+            /* Prevent text wrapping */
         }
 
         .dashboard-buttons button:hover {
@@ -188,15 +194,32 @@
         @media (max-width: 768px) {
             .dashboard-buttons {
                 flex-direction: column;
+                align-items: stretch;
+                /* Full width buttons */
             }
 
             .dashboard-buttons button {
                 width: 100%;
+                /* Full width buttons */
             }
+
+            header h1 {
+                font-size: 1.5rem;
+                /* Smaller header on mobile */
+            }
+        }
+
+        /* New Table Responsive Style */
+        .table-responsive {
+            overflow-x: auto;
+            /* Enable horizontal scrolling */
+            margin-top: 1rem;
+            /* Add some margin to separate from previous content */
         }
 
         table {
             width: 100%;
+            /* Make tables fill their container */
             border-collapse: collapse;
             margin-top: 1rem;
         }
@@ -285,13 +308,6 @@
             margin-top: 10px;
         }
 
-        .add-student-form select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
         .add-student-button {
             display: inline-block;
             padding: 8px 15px;
@@ -331,7 +347,7 @@
     </style>
 </head>
 
-<body>
+<<body>
     <header>
         <h1>Instructor Dashboard</h1>
         <nav>
@@ -363,37 +379,43 @@
             <div id="students" class="submenu">
                 <div class="submenu-content">
                     <h3>All Students</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentsList"></tbody>
-                    </table>
+                    <div class="table-responsive"> <!-- Responsive table wrapper -->
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsList"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="courses" class="submenu">
                 <div class="submenu-content">
                     <h3>All Courses</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Course Name</th>
-                                <th>Course Code</th>
-                            </tr>
-                        </thead>
-                        <tbody id="coursesList"></tbody>
-                    </table>
+                    <div class="table-responsive"> <!-- Responsive table wrapper -->
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Course Name</th>
+                                    <th>Course Code</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coursesList"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="classes" class="submenu">
                 <div class="submenu-content">
                     <h3>All Classes</h3>
-                    <div id="classTable"></div>
+                    <div class="table-responsive"> <!-- Responsive table wrapper -->
+                        <div id="classTable"></div>
+                    </div>
                 </div>
             </div>
 
@@ -405,7 +427,7 @@
                         <input type="date" id="attendanceDate" name="attendanceDate" required>
                         <button type="submit">View Attendance</button>
                     </form>
-                    <div id="attendanceResults"></div>
+                    <div id="attendanceResults" class="table-responsive"></div> <!-- Responsive wrapper for results -->
                 </div>
             </div>
 
@@ -419,7 +441,8 @@
                         </select>
                         <button type="submit">View Attendance</button>
                     </form>
-                    <div id="attendanceByClassResults"></div>
+                    <div id="attendanceByClassResults" class="table-responsive"></div>
+                    <!-- Responsive wrapper for results -->
                 </div>
             </div>
 
@@ -433,14 +456,15 @@
                         </select>
                         <button type="submit">View Attendance</button>
                     </form>
-                    <div id="attendanceByStudentResults"></div>
+                    <div id="attendanceByStudentResults" class="table-responsive"></div>
+                    <!-- Responsive wrapper for results -->
                 </div>
             </div>
 
             <div id="classStudentManagement" class="submenu">
                 <div class="submenu-content">
                     <h3>Class-Student Management</h3>
-                    <div id="classStudentTable"></div>
+                    <div id="classStudentTable" class="table-responsive"></div> <!-- Responsive wrapper -->
                 </div>
             </div>
         </section>
@@ -475,24 +499,12 @@
 
             document.getElementById('attendanceStudentForm').addEventListener('submit', function (event) {
                 event.preventDefault();
-                const studentId = document.getElementById('studentSelect').value;
+                const studentId = document.getElementById('studentSelectt').value;
                 if (studentId) {
                     viewAttendanceByStudent(studentId);
                 }
             });
-
-            // Add event listener for class-student form
-            document.getElementById('classStudentForm').addEventListener('submit', function (event) {
-                event.preventDefault();
-                addStudentToClass();
-            });
-
-            // Add event listener for class select change
-            document.getElementById('classSelect').addEventListener('change', function () {
-                loadStudentsForClass();
-            });
         });
-
 
         function logout(event) {
             // Prevent the default link action (which would navigate away)
@@ -541,13 +553,15 @@
                 })
                 .catch(error => console.error('Error fetching courses:', error));
         }
+
         function clearClassTable() {
             const classTable = document.getElementById('classTable');
             classTable.innerHTML = '';
         }
+
         async function showClasses() {
             try {
-                const response = await fetch('http://localhost:8080/api/admins/classes');
+                const response = await fetch('/api/admins/classes');
                 const classes = await response.json();
                 clearClassTable();
                 // Create table element
@@ -840,7 +854,7 @@
                                     <select id="studentSelect-${cls.id}">
                                         <option value="">Select a student</option>
                                     </select>
-                                    <a href="#" class="add-student-button" onclick="addStudentToClass(${cls.id}); return false;">
+                                    <a href="#" onclick="addStudentToClass(${cls.id}); return false;" class="add-student-button">
                                         <i class="fas fa-user-plus"></i> Add Student
                                     </a>
                                 </div>
@@ -958,6 +972,6 @@
             }, 3000);
         }
     </script>
-</body>
+    </body>
 
 </html>
