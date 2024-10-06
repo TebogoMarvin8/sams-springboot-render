@@ -15,6 +15,39 @@
             height: 400px;
             width: 100%;
         }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Enables horizontal scrolling for small screens */
+            margin-top: 1rem;
+            /* Spacing to separate from other elements */
+            border: 1px solid #ddd;
+            /* Optional: Visual distinction */
+        }
+
+        table {
+            width: 100%;
+            /* Make table take full width */
+            border-collapse: collapse;
+            /* Collapses the borders for clarity */
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            /* Light grey borders for clarity */
+            padding: 0.75rem;
+            /* Padding for table cells */
+            text-align: left;
+            /* Default left alignment */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            /* Light heading background */
+            font-weight: 500;
+            /* Slightly bolder font for headings */
+        }
     </style>
 </head>
 
@@ -88,7 +121,29 @@
 
         <div id="detailsContainer" class="bg-white shadow-md rounded px-8 pt-6 pb-8">
             <h2 class="text-2xl font-bold mb-4">Attendance Details</h2>
-            <div id="attendanceTable"></div>
+            <div class="table-responsive">
+                <table id="attendanceTable" class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th
+                                class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                Student</th>
+                            <th
+                                class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                Class</th>
+                            <th
+                                class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                Course</th>
+                            <th
+                                class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                Attendance Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

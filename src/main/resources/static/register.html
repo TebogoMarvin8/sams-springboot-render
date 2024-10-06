@@ -250,10 +250,16 @@
                 .then(response => {
                     if (response.ok) {
                         return response.json().then(data => {
+                            console.log(data); // Debugging: log the entire response
                             const studentId = data.studentId;
-                            window.location.href = (data.role === 'STUDENT')
-                                ? `/facescanner.html?studentId=${studentId}`
-                                : 'login.html';
+                            const role = data.role; // Get the role from the response
+                            if (role === 'STUDENT') {
+                                // Redirect to facescanner.html for students
+                                window.location.href = `/facescanner.html?studentId=${studentId}`;
+                            } else {
+                                // Redirect to login page for instructors/admins
+                                window.location.href = 'login.html';
+                            }
                         });
                     } else {
                         return response.text().then(text => {

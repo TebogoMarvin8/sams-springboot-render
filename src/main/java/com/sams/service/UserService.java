@@ -30,6 +30,10 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email); // Assuming a JPA repository method
+    }
+
     public List<User> findAll() {
         return userRepository.findAll();
     }

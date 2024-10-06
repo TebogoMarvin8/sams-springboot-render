@@ -63,6 +63,10 @@ public class UserController {
             return new ResponseEntity<>(Map.of("error", "Username already exists"), HttpStatus.BAD_REQUEST);
         }
 
+        // Check if the email already exists
+        if (userService.findByEmail(email) != null) {
+            return new ResponseEntity<>(Map.of("error", "Email already exists"), HttpStatus.BAD_REQUEST);
+        }
         // Create and save the User entity
         User user = new User();
         user.setUsername(username);
@@ -88,6 +92,7 @@ public class UserController {
                 // Add studentId to the response if the role is student
                 response.put("message", "Registration successful");
                 response.put("studentId", student.getId()); // Include studentId for frontend use
+                response.put("role", "STUDENT"); // Include role for redirection
                 break;
 
             case "INSTRUCTOR":
