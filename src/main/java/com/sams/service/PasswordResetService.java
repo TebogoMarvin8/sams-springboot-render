@@ -31,7 +31,7 @@ public class PasswordResetService {
     public boolean resetPassword(String token, String newPassword) {
         User user = userRepository.findByResetToken(token);
         if (user != null && user.getResetTokenExpiry().isAfter(LocalDateTime.now())) {
-            user.setPassword(newPassword); // Remember to hash the password
+            user.setPassword(newPassword);
             user.setResetToken(null);
             user.setResetTokenExpiry(null);
             userRepository.save(user);

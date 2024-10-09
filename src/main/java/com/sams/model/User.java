@@ -96,7 +96,7 @@ public class User {
         this.admin = admin;
     }
 
-  public String getResetToken() {
+    public String getResetToken() {
         return resetToken;
     }
 

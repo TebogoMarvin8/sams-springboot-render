@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email); // Assuming a JPA repository method
+        return userRepository.findByEmail(email);
     }
 
     public List<User> findAll() {
