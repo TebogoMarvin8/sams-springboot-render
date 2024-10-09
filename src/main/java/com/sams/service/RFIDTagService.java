@@ -29,10 +29,12 @@ public class RFIDTagService {
     public List<RFIDTag> getAllRFIDTags() {
         return rfidTagRepository.findAll();
     }
-// Method to retrieve RFIDTags that are not assigned to any Student
-public List<RFIDTag> getUnassignedRFIDTags() {
-    return rfidTagRepository.findUnassignedRFIDTags();
-}
+
+    // Method to retrieve RFIDTags that are not assigned to any Student
+    public List<RFIDTag> getUnassignedRFIDTags() {
+        return rfidTagRepository.findUnassignedRFIDTags();
+    }
+
     // Delete an RFIDTag by its ID
     public void deleteRFIDTag(Long id) {
         rfidTagRepository.deleteById(id);

@@ -14,15 +14,31 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // Save a new user, without encoding password
+    // Save a new user with a custom password transformation
     public void save(User user) {
-        // Note: For simplicity, we are not encoding the password here
+        String transformedPassword = customPasswordTransform(user.getPassword());
+        user.setPassword(transformedPassword);
         userRepository.save(user);
     }
 
-    // Check if the raw password matches the stored password
+    // Simple custom password transformation function
+    private String customPasswordTransform(String password) {
+        // A salt-like string and shift characters by 2
+        String salt = "S@1t&^#*&@^#*^123863860hsuig"; // Custom "salt" added
+        StringBuilder sb = new StringBuilder();
+
+        // Combine the salt and password, shifting characters
+        for (char c : (salt + password).toCharArray()) {
+            sb.append((char) (c + 4)); // Shift characters by 2 positions in ASCII
+        }
+
+        return sb.toString();
+    }
+
+    // Check password by applying the same transformation
     public boolean checkPassword(String rawPassword, String storedPassword) {
-        return rawPassword.equals(storedPassword); // Simple comparison, not secure
+        String transformedPassword = customPasswordTransform(rawPassword);
+        return transformedPassword.equals(storedPassword);
     }
 
     // Find a user by username

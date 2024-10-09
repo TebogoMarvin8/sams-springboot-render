@@ -27,6 +27,8 @@ let knownDescriptors = [];
 let classId = getClassIdFromUrl();  // Get classId from URL
 let studentId = getStudentIdFromUrl();  // Get studentId from URL
 let attendanceMarked = false; // Flag to track attendance status
+let faceNotRecognizedStartTime = null; //variable to track when face was first not recognized
+
 
 async function loadKnownDescriptors() {
   try {
@@ -95,28 +97,45 @@ video.addEventListener('play', () => {
 
     if (detections.length === 0) {
       updateStatus("No face detected. Please move closer to the camera.", "error");
+      handleFaceNotRecognized();
       return;
     }
 
     if (knownDescriptors.length > 0) {
-      const faceMatcher = new faceapi.FaceMatcher(knownDescriptors, 0.3);  //strictness out of 1, lower is stricter, this is the best I could get the accuracy after testing
+      const faceMatcher = new faceapi.FaceMatcher(knownDescriptors, 0.3);
       const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
+      let faceRecognized = false;
       results.forEach((result, i) => {
         if (result.label !== 'unknown' && !attendanceMarked) {
           updateStatus("Face recognized. Marking attendance...", "success");
           markAttendance(studentId, classId);
           attendanceMarked = true;
           stopVideo();
-        } else if (!attendanceMarked) {
-          updateStatus("Face not recognized. Please try again.", "error");
+          faceRecognized = true;
         }
       });
+
+      if (!faceRecognized) {
+        updateStatus("Face not recognized. Please try again.", "error");
+        handleFaceNotRecognized();
+      } else {
+        faceNotRecognizedStartTime = null; // Reset the timer if face is recognized
+      }
     } else {
       updateStatus("Error: No known face data available. Please contact support.", "error");
     }
   }, 500);
 });
+
+function handleFaceNotRecognized() {
+  const currentTime = new Date().getTime();
+  if (!faceNotRecognizedStartTime) {
+    faceNotRecognizedStartTime = currentTime;
+  } else if (currentTime - faceNotRecognizedStartTime >= 10000) { // 10 seconds
+    window.location.href = 'face-unrecognized.html';
+  }
+}
 
 async function markAttendance(studentId, classId) {
   try {

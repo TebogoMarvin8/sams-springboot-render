@@ -21,6 +21,7 @@ import com.sams.repository.AttendanceRepository;
 import com.sams.repository.ClassRepository;
 import com.sams.repository.StudentRepository;
 import com.sams.service.AttendanceService;
+import com.sams.service.EmailService;
 
 @RestController
 @RequestMapping("/api/attendance")
@@ -34,6 +35,8 @@ public class AttendanceController {
     private AttendanceRepository attendanceRepository;
     @Autowired
     private AttendanceService attendanceService;
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/mark")
     public ResponseEntity<String> markAttendance(@RequestBody Map<String, String> request) {
@@ -64,6 +67,9 @@ public class AttendanceController {
         // Save the attendance
         attendanceRepository.save(attendance);
 
+        // Send attendance email
+       emailService.sendAttendanceMarkedEmail(student.getEmail(), student.getFirstName(), clazz.getClassName());
+    
         return ResponseEntity
                 .ok("Attendance marked for " + student.getFirstName() + " in class " + clazz.getClassName());
     }
@@ -87,15 +93,19 @@ public class AttendanceController {
         String dayOfWeekString = currentDay.name(); // Returns "MONDAY", "TUESDAY", etc. converted to String
 
         // Find the class based on the student's schedule and the current time
-        Clazz currentClass = classRepository.findActiveClassByStudentAndTime(student.getId(), currentTime,
-                dayOfWeekString);
+        Clazz currentClass = classRepository.findActiveClassByStudentAndTime(student.getId(), currentTime,dayOfWeekString);
 
         if (currentClass == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No active class for student at the current time");
         }
 
+                
         // Mark attendance for this class
         attendanceService.markAttendance(student.getId(), currentClass.getId());
+
+
+        // Send attendance email
+       emailService.sendAttendanceMarkedEmail(student.getEmail(), student.getFirstName(), currentClass.getClassName());
 
         return ResponseEntity.ok("Attendance marked for " + student.getFirstName() + " in class " + currentClass.getClassName());
     }

@@ -22,8 +22,14 @@ import com.sams.model.Student;
 import com.sams.model.User;
 import com.sams.service.AdminService;
 import com.sams.service.InstructorService;
+import com.sams.service.PasswordResetService;
 import com.sams.service.StudentService;
 import com.sams.service.UserService;
+import com.sams.service.EmailService;
+import com.sams.service.PasswordResetService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 
 import jakarta.servlet.http.HttpSession;
 
@@ -39,6 +45,10 @@ public class UserController {
     private InstructorService instructorService;
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     @GetMapping("/session-info")
     public ResponseEntity<Map<String, Object>> getSessionInfo(HttpSession session) {
@@ -89,6 +99,9 @@ public class UserController {
                 student.setUser(user); // Link user to student
                 studentService.createStudent(student); // Save the student entity
 
+                // Send registration email
+                emailService.sendRegistrationEmail(student.getEmail(), student.getFirstName());
+
                 // Add studentId to the response if the role is student
                 response.put("message", "Registration successful");
                 response.put("studentId", student.getId()); // Include studentId for frontend use
@@ -103,6 +116,9 @@ public class UserController {
                 instructor.setUser(user); // Link user to instructor
                 instructorService.saveInstructor(instructor); // Save the instructor entity
 
+                // Send registration email
+                emailService.sendRegistrationEmail(instructor.getEmail(), instructor.getFirstName());
+
                 // Add redirect for instructor
                 response.put("message", "Registration successful. Redirecting to login.");
                 response.put("redirectUrl", "/login.html"); // Redirect to login for instructors
@@ -115,6 +131,9 @@ public class UserController {
                 admin.setEmail(email);
                 admin.setUser(user); // Link user to admin
                 adminService.saveAdmin(admin); // Save the admin entity
+
+                 // Send registration email
+                 emailService.sendRegistrationEmail(admin.getEmail(), admin.getFirstName());
 
                 // Add redirect for admin
                 response.put("message", "Registration successful. Redirecting to login.");
@@ -173,6 +192,24 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        passwordResetService.initiatePasswordReset(email);
+        return ResponseEntity.ok("If the email exists in our system, a password reset link has been sent.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+        String newPassword = request.get("newPassword");
+        boolean success = passwordResetService.resetPassword(token, newPassword);
+        if (success) {
+            return ResponseEntity.ok("Password has been reset successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid or expired token.");
+        }
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
@@ -182,7 +219,7 @@ public class UserController {
         }
 
         user.setUsername(userDetails.getUsername());
-        user.setPassword(userDetails.getPassword()); // Assuming passwords are not encoded for now
+        user.setPassword(userDetails.getPassword()); // passwords are not encoded for now
         user.setRole(userDetails.getRole());
 
         userService.save(user);

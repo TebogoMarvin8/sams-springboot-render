@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
            "UNION " +
            "SELECT a.user.id FROM Admin a WHERE a.email = :email)")
     User findByEmail(@Param("email") String email);
+
+    User findByResetToken(String resetToken);
 }

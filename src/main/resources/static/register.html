@@ -149,9 +149,15 @@
             text-decoration: underline;
         }
 
-        /* Error feedback styles */
-        .is-invalid {
-            border-color: var(--error-color);
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .is-invalid+.error-message {
+            display: block;
         }
     </style>
 </head>
@@ -159,19 +165,30 @@
 <body>
     <div class="container">
         <form class="form-signin" id="registerForm" novalidate>
-            <h2 class="form-signin-heading">Join Our Community</h2>
+            <h2 class="form-signin-heading">Register To Join The System</h2>
             <div class="alert alert-danger" role="alert" style="display:none;" id="error-message"></div>
 
             <div class="input-group">
                 <i class="fas fa-user"></i>
                 <input type="text" id="username" name="username" class="form-control" placeholder="Username" required
                     autofocus aria-required="true">
+                <div class="error-message" id="username-error">Username should be at least 4 characters long and contain
+                    no spaces.</div>
             </div>
 
             <div class="input-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" id="password" name="password" class="form-control" placeholder="Password"
                     required aria-required="true">
+                <div class="error-message" id="password-error">Password should be at least 6 characters long, include a
+                    number and a special character, and contain no spaces.</div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+                    placeholder="Confirm Password" required aria-required="true">
+                <div class="error-message" id="confirmPassword-error">Passwords do not match.</div>
             </div>
 
             <div class="input-group">
@@ -182,6 +199,7 @@
                     <option value="INSTRUCTOR">Instructor</option>
                     <option value="ADMIN">Admin</option>
                 </select>
+                <div class="error-message" id="role-error">Please select a role.</div>
             </div>
 
             <div id="additionalFields" style="display:none;">
@@ -189,18 +207,21 @@
                     <i class="fas fa-user-circle"></i>
                     <input type="text" id="firstName" name="firstName" class="form-control" placeholder="First Name"
                         required aria-required="true">
+                    <div class="error-message" id="firstName-error">Please enter your first name.</div>
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-user-circle"></i>
                     <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name"
                         required aria-required="true">
+                    <div class="error-message" id="lastName-error">Please enter your last name.</div>
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
                     <input type="email" id="email" name="email" class="form-control" placeholder="Email" required
                         aria-required="true">
+                    <div class="error-message" id="email-error">Please enter a valid email address.</div>
                 </div>
             </div>
 
@@ -208,6 +229,7 @@
                 <input type="checkbox" class="form-check-input" id="terms" required>
                 <label class="form-check-label" for="terms">I agree to the <a href="/terms-and-conditions.html"
                         target="_blank">Terms and Conditions</a></label>
+                <div class="error-message" id="terms-error">You must agree to the terms and conditions.</div>
             </div>
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
@@ -220,12 +242,91 @@
             additionalFields.style.display = this.value ? 'block' : 'none';
         });
 
+        // Custom form validation
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function () {
+                validateInput(this);
+            });
+        });
+
+        function validateInput(input) {
+            const id = input.id;
+            const value = input.value;
+            let isValid = true;
+            let errorMessage = '';
+
+            switch (id) {
+                case 'username':
+                    if (value.length < 4 || value.includes(' ')) {
+                        isValid = false;
+                        errorMessage = 'Username should be at least 4 characters long and contain no spaces.';
+                    }
+                    break;
+                case 'password':
+                    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/;
+                    if (!passwordRegex.test(value)) {
+                        isValid = false;
+                        errorMessage = 'Password should be at least 6 characters long, include a number and a special character, and contain no spaces.';
+                    }
+                    break;
+                case 'confirmPassword':
+                    const password = document.getElementById('password').value;
+                    if (value !== password) {
+                        isValid = false;
+                        errorMessage = 'Passwords do not match.';
+                    }
+                    break;
+                case 'role':
+                    if (value === "") {
+                        isValid = false;
+                        errorMessage = 'Please select a role.';
+                    }
+                    break;
+                case 'firstName':
+                case 'lastName':
+                    if (value.trim() === "") {
+                        isValid = false;
+                        errorMessage = `Please enter your ${id === 'firstName' ? 'first' : 'last'} name.`;
+                    }
+                    break;
+                case 'email':
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(value)) {
+                        isValid = false;
+                        errorMessage = 'Please enter a valid email address.';
+                    }
+                    break;
+                case 'terms':
+                    if (!input.checked) {
+                        isValid = false;
+                        errorMessage = 'You must agree to the terms and conditions.';
+                    }
+                    break;
+            }
+
+            if (!isValid) {
+                input.classList.add('is-invalid');
+                document.getElementById(`${id}-error`).textContent = errorMessage;
+            } else {
+                input.classList.remove('is-invalid');
+            }
+
+            return isValid;
+        }
+
         document.getElementById('registerForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
             // Check for validity
-            if (!this.checkValidity()) {
-                event.stopPropagation();
+            let isValid = true;
+            inputs.forEach(input => {
+                if (!validateInput(input)) {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
                 this.classList.add('shake');
                 setTimeout(() => this.classList.remove('shake'), 500);
                 return;
@@ -257,8 +358,8 @@
                                 // Redirect to facescanner.html for students
                                 window.location.href = `/facescanner.html?studentId=${studentId}`;
                             } else {
-                                // Redirect to login page for instructors/admins
-                                window.location.href = 'login.html';
+                                // Redirect to successRegister page for instructors/admins
+                                window.location.href = 'successRegister.html';
                             }
                         });
                     } else {
@@ -275,18 +376,6 @@
                         errorMessage.style.display = 'none';
                     }, 5000);
                 });
-        });
-
-        // Custom form validation
-        const inputs = document.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            input.addEventListener('blur', function () {
-                if (!this.checkValidity()) {
-                    this.classList.add('is-invalid');
-                } else {
-                    this.classList.remove('is-invalid');
-                }
-            });
         });
     </script>
 </body>
