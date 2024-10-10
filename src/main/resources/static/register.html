@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Register - Learning Management System</title>
+    <title>Student Registration - Learning Management System</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -165,7 +165,7 @@
 <body>
     <div class="container">
         <form class="form-signin" id="registerForm" novalidate>
-            <h2 class="form-signin-heading">Register To Join The System</h2>
+            <h2 class="form-signin-heading">Student Registration</h2>
             <div class="alert alert-danger" role="alert" style="display:none;" id="error-message"></div>
 
             <div class="input-group">
@@ -192,37 +192,24 @@
             </div>
 
             <div class="input-group">
-                <i class="fas fa-user-tag"></i>
-                <select id="role" name="role" class="form-control" required aria-required="true">
-                    <option value="" disabled selected>Select your role</option>
-                    <option value="STUDENT">Student</option>
-                    <option value="INSTRUCTOR">Instructor</option>
-                    <option value="ADMIN">Admin</option>
-                </select>
-                <div class="error-message" id="role-error">Please select a role.</div>
+                <i class="fas fa-user-circle"></i>
+                <input type="text" id="firstName" name="firstName" class="form-control" placeholder="First Name"
+                    required aria-required="true">
+                <div class="error-message" id="firstName-error">Please enter your first name.</div>
             </div>
 
-            <div id="additionalFields" style="display:none;">
-                <div class="input-group">
-                    <i class="fas fa-user-circle"></i>
-                    <input type="text" id="firstName" name="firstName" class="form-control" placeholder="First Name"
-                        required aria-required="true">
-                    <div class="error-message" id="firstName-error">Please enter your first name.</div>
-                </div>
+            <div class="input-group">
+                <i class="fas fa-user-circle"></i>
+                <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name" required
+                    aria-required="true">
+                <div class="error-message" id="lastName-error">Please enter your last name.</div>
+            </div>
 
-                <div class="input-group">
-                    <i class="fas fa-user-circle"></i>
-                    <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name"
-                        required aria-required="true">
-                    <div class="error-message" id="lastName-error">Please enter your last name.</div>
-                </div>
-
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Email" required
-                        aria-required="true">
-                    <div class="error-message" id="email-error">Please enter a valid email address.</div>
-                </div>
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email" required
+                    aria-required="true">
+                <div class="error-message" id="email-error">Please enter a valid email address.</div>
             </div>
 
             <div class="form-check">
@@ -232,18 +219,13 @@
                 <div class="error-message" id="terms-error">You must agree to the terms and conditions.</div>
             </div>
 
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Create Student Account</button>
         </form>
     </div>
 
     <script>
-        document.getElementById('role').addEventListener('change', function () {
-            const additionalFields = document.getElementById('additionalFields');
-            additionalFields.style.display = this.value ? 'block' : 'none';
-        });
-
         // Custom form validation
-        const inputs = document.querySelectorAll('input, select');
+        const inputs = document.querySelectorAll('input');
         inputs.forEach(input => {
             input.addEventListener('blur', function () {
                 validateInput(this);
@@ -315,6 +297,7 @@
             return isValid;
         }
 
+
         document.getElementById('registerForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -335,7 +318,7 @@
             const data = {
                 username: document.getElementById('username').value,
                 password: document.getElementById('password').value,
-                role: document.getElementById('role').value,
+                role: 'STUDENT',
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
                 email: document.getElementById('email').value
@@ -350,23 +333,17 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        return response.json().then(data => {
-                            console.log(data); // Debugging: log the entire response
-                            const studentId = data.studentId;
-                            const role = data.role; // Get the role from the response
-                            if (role === 'STUDENT') {
-                                // Redirect to facescanner.html for students
-                                window.location.href = `/facescanner.html?studentId=${studentId}`;
-                            } else {
-                                // Redirect to successRegister page for instructors/admins
-                                window.location.href = 'successRegister.html';
-                            }
-                        });
+                        return response.json();
                     } else {
                         return response.text().then(text => {
                             throw new Error(text);
                         });
                     }
+                })
+                .then(data => {
+                    console.log(data);
+                    const studentId = data.studentId;
+                    window.location.href = `/facescanner.html?studentId=${studentId}`;
                 })
                 .catch(error => {
                     const errorMessage = document.getElementById('error-message');
