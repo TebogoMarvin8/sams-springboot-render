@@ -24,7 +24,13 @@ public class PasswordResetService {
             user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
             userRepository.save(user);
 
-            emailService.sendPasswordResetEmail(user.getStudent().getEmail(), user.getStudent().getFirstName(), resetToken);
+            if (user.getStudent() != null) {
+                emailService.sendPasswordResetEmail(user.getStudent().getEmail(), user.getStudent().getFirstName(),resetToken);
+            } else if (user.getInstructor() != null) {
+                emailService.sendPasswordResetEmail(user.getInstructor().getEmail(),user.getInstructor().getFirstName(), resetToken);
+            } else if (user.getAdmin() != null) {
+                emailService.sendPasswordResetEmail(user.getAdmin().getEmail(), user.getAdmin().getFirstName(),resetToken);
+            }
         }
     }
 
