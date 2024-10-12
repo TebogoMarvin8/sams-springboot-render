@@ -16,6 +16,7 @@
       --button-bg: #3498db;
       --button-color: #fff;
       --button-hover-bg: #2980b9;
+      --warning-color: #e74c3c;
     }
 
     body {
@@ -49,6 +50,10 @@
       font-size: 1.8rem;
     }
 
+    #videoContainer {
+      display: none;
+    }
+
     video {
       display: block;
       margin: 0 auto 20px;
@@ -67,7 +72,7 @@
     }
 
     #warning {
-      color: #e74c3c;
+      color: var(--warning-color);
       display: none;
     }
 
@@ -145,22 +150,45 @@
 <body>
   <div class="container">
     <h1>Face Descriptor Scanner</h1>
-    <video id="video" autoplay muted></video>
-    <div id="status">Initializing camera...</div>
-    <div id="loading" class="loading">Processing...</div>
-    <div id="warning"></div>
-    <div class="button-container">
-      <button id="skipButton" class="button">Skip Face Scanning</button>
-      <button id="continueButton" class="button" style="display: none;">Continue with Scanning</button>
+    <div id="initialOptions">
+      <p>Would you like to proceed with face scanning?</p>
+      <div class="button-container">
+        <button id="skipButton" class="button">Skip Face Scanning</button>
+        <button id="continueButton" class="button">Continue with Face Scanning</button>
+      </div>
     </div>
+    <div id="videoContainer" style="display: none;">
+      <video id="video" autoplay muted></video>
+      <div id="status">Initializing camera...</div>
+      <div id="loading" class="loading">Processing...</div>
+    </div>
+    <div id="warning"></div>
   </div>
   <script>
+    const initialOptions = document.getElementById('initialOptions');
+    const videoContainer = document.getElementById('videoContainer');
     const video = document.getElementById('video');
     const status = document.getElementById('status');
     const loading = document.getElementById('loading');
     const warning = document.getElementById('warning');
     const skipButton = document.getElementById('skipButton');
     const continueButton = document.getElementById('continueButton');
+
+    skipButton.addEventListener('click', () => {
+      warning.textContent = "Warning: If you skip face scanning, you won't be able to mark attendance using the face recognition feature. You will only be able to mark attendance on the system by using your assigned RFITag.";
+      warning.style.display = 'block';
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentId = urlParams.get('studentId');
+      setTimeout(() => {
+        window.location.href = `successRegister.html?studentId=${studentId}&skipped=true`;
+      }, 3000);
+    });
+
+    continueButton.addEventListener('click', () => {
+      initialOptions.style.display = 'none';
+      videoContainer.style.display = 'block';
+      loadModels();
+    });
 
     async function loadModels() {
       try {
@@ -250,21 +278,6 @@
         loading.style.display = 'none';
       }
     }
-
-    skipButton.addEventListener('click', () => {
-      warning.textContent = "Warning: If you skip face scanning, you won't be able to mark attendance using the face recognition feature. You will only be able to mark attendance on the system by using your assigned RFITag.";
-      warning.style.display = 'block';
-      skipButton.style.display = 'none';
-      continueButton.style.display = 'inline-block';
-    });
-
-    continueButton.addEventListener('click', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const studentId = urlParams.get('studentId');
-      window.location.href = `successRegister.html?studentId=${studentId}&skipped=true`;
-    });
-
-    window.addEventListener('load', loadModels);
   </script>
 </body>
 
