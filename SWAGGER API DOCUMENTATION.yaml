@@ -1,0 +1,704 @@
+openapi: 3.0.0
+info:
+  title: Student Attendance Management System API
+  description: API for managing users, attendance, classes, RFID tags, and more in the Student Attendance Management System (SAMS).
+  version: 1.0.0
+servers:
+  - url: /api
+    description: server
+
+paths:
+  /users:
+    get:
+      summary: Get all users
+      description: Retrieves a list of all users.
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieves a user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    put:
+      summary: Update user by ID
+      description: Updates user details by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    delete:
+      summary: Delete user by ID
+      description: Deletes a user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the user
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+  /users/register:
+    post:
+      summary: Register a new user
+      description: Registers a new user (student, instructor, or admin) based on role.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  studentId:
+                    type: integer
+                  redirectUrl:
+                    type: string
+        '400':
+          description: Username or email already exists
+
+  /users/login:
+    post:
+      summary: User login
+      description: Authenticates a user and returns a redirect URL based on the user's role.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+        '401':
+          description: Incorrect username or password
+
+  /users/session-info:
+    get:
+      summary: Get session information
+      description: Retrieves the session information (e.g., student ID, student name, role).
+      responses:
+        '200':
+          description: Session information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  studentId:
+                    type: integer
+                  studentName:
+                    type: string
+                  role:
+                    type: string
+
+  /attendance/mark:
+    post:
+      summary: Mark attendance
+      description: Marks attendance for a student in a specific class.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentId:
+                  type: string
+                classId:
+                  type: string
+      responses:
+        '200':
+          description: Attendance marked
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Student or class not found
+
+  /attendance/markRFID:
+    post:
+      summary: Mark attendance with RFID
+      description: Marks attendance for a student using their RFID card UID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardUID:
+                  type: string
+      responses:
+        '200':
+          description: Attendance marked
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Student not found
+        '400':
+          description: No active class for student at the current time
+
+  /class-student/class/{classId}:
+    get:
+      summary: Get students by class ID
+      description: Retrieves a list of students enrolled in a specific class.
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the class
+      responses:
+        '200':
+          description: List of students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+
+  /class-student/student/{studentId}:
+    get:
+      summary: Get classes by student ID
+      description: Retrieves a list of classes that a specific student is enrolled in.
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the student
+      responses:
+        '200':
+          description: List of classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Clazz'
+
+  /class-student/{classId}/{studentId}:
+    post:
+      summary: Add a student to a class
+      description: Adds a specific student to a specific class.
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the class
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the student
+      responses:
+        '200':
+          description: Student added to class
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassStudentRelationship'
+
+    delete:
+      summary: Remove a student from a class
+      description: Removes a specific student from a specific class.
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the class
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the student
+      responses:
+        '204':
+          description: Student removed from class successfully
+
+  /rfid-tags:
+    get:
+      summary: Get all RFID tags
+      description: Retrieves a list of all RFID tags.
+      responses:
+        '200':
+          description: List of RFID tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RFIDTag'
+
+    post:
+      summary: Create a new RFID tag
+      description: Creates a new RFID tag.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RFIDTag'
+      responses:
+        '201':
+          description: RFID tag created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RFIDTag'
+
+  /rfid-tags/unassigned:
+    get:
+      summary: Get unassigned RFID tags
+      description: Retrieves a list of RFID tags that are not assigned to any student.
+      responses:
+        '200':
+          description: List of unassigned RFID tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RFIDTag'
+
+  /rfid-tags/{id}:
+    get:
+      summary: Get RFID tag by ID
+      description: Retrieves a specific RFID tag by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the RFID tag
+      responses:
+        '200':
+          description: RFID tag details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RFIDTag'
+        '404':
+          description: RFID tag not found
+
+    put:
+      summary: Update RFID tag by ID
+      description: Updates a specific RFID tag by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the RFID tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RFIDTag'
+      responses:
+        '200':
+          description: RFID tag updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RFIDTag'
+        '404':
+          description: RFID tag not found
+
+    delete:
+      summary: Delete RFID tag by ID
+      description: Deletes a specific RFID tag by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the RFID tag
+      responses:
+        '204':
+          description: RFID tag deleted successfully
+        '404':
+          description: RFID tag not found
+
+  /instructors:
+    get:
+      summary: Get all instructors
+      description: Retrieves a list of all instructors.
+      responses:
+        '200':
+          description: List of instructors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Instructor'
+
+    post:
+      summary: Create a new instructor
+      description: Creates a new instructor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instructor'
+      responses:
+        '201':
+          description: Instructor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instructor'
+
+  /instructors/{id}:
+    get:
+      summary: Get instructor by ID
+      description: Retrieves an instructor by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the instructor
+      responses:
+        '200':
+          description: Instructor details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instructor'
+        '404':
+          description: Instructor not found
+
+    put:
+      summary: Update instructor by ID
+      description: Updates instructor details by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the instructor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instructor'
+      responses:
+        '200':
+          description: Instructor updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instructor'
+        '404':
+          description: Instructor not found
+
+    delete:
+      summary: Delete instructor by ID
+      description: Deletes an instructor by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the instructor
+      responses:
+        '204':
+          description: Instructor deleted successfully
+        '404':
+          description: Instructor not found
+
+  /instructors/{id}/classes:
+    get:
+      summary: Get classes by instructor ID
+      description: Retrieves a list of classes taught by a specific instructor.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the instructor
+      responses:
+        '200':
+          description: List of classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Clazz'
+
+  /instructors/attendance/date:
+    get:
+      summary: Get attendance by date
+      description: Retrieves attendance records for a specific date.
+      parameters:
+        - name: dateTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Date to retrieve attendance records for
+      responses:
+        '200':
+          description: List of attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+
+  /instructors/attendance/class/{classId}:
+    get:
+      summary: Get attendance by class ID
+      description: Retrieves attendance records for a specific class.
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the class
+      responses:
+        '200':
+          description: List of attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+
+  /instructors/attendance/student/{studentId}:
+    get:
+      summary: Get attendance by student ID
+      description: Retrieves attendance records for a specific student.
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the student
+      responses:
+        '200':
+          description: List of attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+        student:
+          $ref: '#/components/schemas/Student'
+        instructor:
+          $ref: '#/components/schemas/Instructor'
+        admin:
+          $ref: '#/components/schemas/Admin'
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        faceDescriptors:
+          type: string
+          format: longText
+
+    Instructor:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+
+    Admin:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+
+    Clazz:
+      type: object
+      properties:
+        id:
+          type: integer
+        className:
+          type: string
+        course:
+          $ref: '#/components/schemas/Course'
+        instructor:
+          $ref: '#/components/schemas/Instructor'
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+        courseCode:
+          type: string
+        courseName:
+          type: string
+
+    Attendance:
+      type: object
+      properties:
+        id:
+          type: integer
+        attendanceTime:
+          type: string
+          format: date-time
+        student:
+          $ref: '#/components/schemas/Student'
+        clazz:
+          $ref: '#/components/schemas/Clazz'
+
+    RFIDTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        tagNumber:
+          type: string
+        student:
+          $ref: '#/components/schemas/Student'
+
+    ClassStudentRelationship:
+      type: object
+      properties:
+        classId:
+          type: integer
+        studentId:
+          type: integer

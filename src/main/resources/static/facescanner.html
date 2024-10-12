@@ -13,6 +13,9 @@
       --container-bg: #fff;
       --shadow-color: rgba(0, 0, 0, 0.1);
       --spinner-color: #3498db;
+      --button-bg: #3498db;
+      --button-color: #fff;
+      --button-hover-bg: #2980b9;
     }
 
     body {
@@ -56,10 +59,16 @@
     }
 
     #status,
-    #loading {
+    #loading,
+    #warning {
       text-align: center;
       margin-top: 20px;
       font-weight: bold;
+    }
+
+    #warning {
+      color: #e74c3c;
+      display: none;
     }
 
     .loading {
@@ -80,13 +89,30 @@
     }
 
     @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-      100% {
-        transform: rotate(360deg);
-      }
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .button {
+      background-color: var(--button-bg);
+      color: var(--button-color);
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: var(--button-hover-bg);
     }
 
     @media (max-width: 600px) {
@@ -103,8 +129,14 @@
       }
 
       #status,
-      #loading {
+      #loading,
+      #warning {
         font-size: 0.9rem;
+      }
+
+      .button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
       }
     }
   </style>
@@ -116,11 +148,19 @@
     <video id="video" autoplay muted></video>
     <div id="status">Initializing camera...</div>
     <div id="loading" class="loading">Processing...</div>
+    <div id="warning"></div>
+    <div class="button-container">
+      <button id="skipButton" class="button">Skip Face Scanning</button>
+      <button id="continueButton" class="button" style="display: none;">Continue with Scanning</button>
+    </div>
   </div>
   <script>
     const video = document.getElementById('video');
     const status = document.getElementById('status');
     const loading = document.getElementById('loading');
+    const warning = document.getElementById('warning');
+    const skipButton = document.getElementById('skipButton');
+    const continueButton = document.getElementById('continueButton');
 
     async function loadModels() {
       try {
@@ -210,6 +250,19 @@
         loading.style.display = 'none';
       }
     }
+
+    skipButton.addEventListener('click', () => {
+      warning.textContent = "Warning: If you skip face scanning, you won't be able to mark attendance using the face recognition feature. You will only be able to mark attendance on the system by using your assigned RFITag.";
+      warning.style.display = 'block';
+      skipButton.style.display = 'none';
+      continueButton.style.display = 'inline-block';
+    });
+
+    continueButton.addEventListener('click', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentId = urlParams.get('studentId');
+      window.location.href = `successRegister.html?studentId=${studentId}&skipped=true`;
+    });
 
     window.addEventListener('load', loadModels);
   </script>
