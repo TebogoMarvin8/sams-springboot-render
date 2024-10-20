@@ -102,7 +102,7 @@ video.addEventListener('play', () => {
     }
 
     if (knownDescriptors.length > 0) {
-      const faceMatcher = new faceapi.FaceMatcher(knownDescriptors, 0.3);
+      const faceMatcher = new faceapi.FaceMatcher(knownDescriptors, 0.4);
       const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
       let faceRecognized = false;
