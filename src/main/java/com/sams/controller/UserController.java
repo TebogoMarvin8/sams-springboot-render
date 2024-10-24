@@ -51,8 +51,9 @@ public class UserController {
         Map<String, Object> sessionInfo = new HashMap<>();
         sessionInfo.put("studentId", session.getAttribute("studentId"));
         sessionInfo.put("studentName", session.getAttribute("studentName"));
+        sessionInfo.put("instructorId", session.getAttribute("instructorId"));
         sessionInfo.put("role", session.getAttribute("role"));
-        return new ResponseEntity<>(sessionInfo, HttpStatus.OK);
+        return ResponseEntity.ok(sessionInfo);
     }
 
     @PostMapping("/register")
@@ -128,8 +129,8 @@ public class UserController {
                 admin.setUser(user); // Link user to admin
                 adminService.saveAdmin(admin); // Save the admin entity
 
-                 // Send registration email
-                 emailService.sendRegistrationEmail(admin.getEmail(), admin.getFirstName());
+                // Send registration email
+                emailService.sendRegistrationEmail(admin.getEmail(), admin.getFirstName());
 
                 // Add redirect for admin
                 response.put("message", "Registration successful. Redirecting to login.");
@@ -162,32 +163,37 @@ public class UserController {
             response.put("error", "Incorrect password.");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         } else {
-
             String role = existingUser.getRole();
+            // Set common session attributes
+            session.setAttribute("role", role);
+
             // Prepare the response with the redirect URL based on the user's role
             switch (role) {
                 case "STUDENT":
-                    // Store the user ID in the session
+                    // Store student information in session
                     session.setAttribute("studentId", existingUser.getStudent().getId());
-                    session.setAttribute("role", existingUser.getRole());
                     session.setAttribute("studentName", existingUser.getStudent().getFirstName());
-                    // debugging studentId
-                    System.out.println("Student ID set in session: " + existingUser.getStudent().getId());
-
                     response.put("redirectUrl", "/student-dashboard.html");
                     break;
+
                 case "INSTRUCTOR":
+                    // Store instructor information in session
+                    session.setAttribute("instructorId", existingUser.getInstructor().getId());
                     response.put("redirectUrl", "/instructor-dashboard.html");
                     break;
+
                 case "ADMIN":
                     response.put("redirectUrl", "/admin-dashboard.html");
                     break;
+
                 default:
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
+
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
+
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");

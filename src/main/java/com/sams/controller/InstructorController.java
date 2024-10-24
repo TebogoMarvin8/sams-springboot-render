@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,8 +56,14 @@ public class InstructorController {
     }
 
     @GetMapping("/{id}/classes")
-    public List<Clazz> getClassesByInstructorId(@PathVariable Long id) {
-        return instructorService.getClassesByInstructorId(id);
+    public ResponseEntity<?> getClassesByInstructorId(@PathVariable Long id) {
+        try {
+            List<Clazz> classes = instructorService.getClassesByInstructorId(id);
+            return ResponseEntity.ok(classes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching instructor classes: " + e.getMessage());
+        }
     }
 
     @GetMapping("/attendance/date")
