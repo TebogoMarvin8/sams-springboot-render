@@ -1,6 +1,8 @@
 package com.sams.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +55,14 @@ public class AttendanceService {
         Attendance attendance = new Attendance();
         attendance.setStudent(student);
         attendance.setClazz(clazz);
-        attendance.setAttendanceTime(LocalDateTime.now()); // Set the current time
+
+        // Set the current time in GMT+2 and convert it to LocalDateTime
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("GMT+2"));
+        LocalDateTime attendanceTime = zonedDateTime.toLocalDateTime(); // Convert ZonedDateTime to LocalDateTime
+        attendance.setAttendanceTime(attendanceTime);
 
         // Save the Attendance record to the database
         attendanceRepository.save(attendance);
     }
+
 }

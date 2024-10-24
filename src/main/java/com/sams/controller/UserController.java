@@ -26,10 +26,6 @@ import com.sams.service.PasswordResetService;
 import com.sams.service.StudentService;
 import com.sams.service.UserService;
 import com.sams.service.EmailService;
-import com.sams.service.PasswordResetService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 
 import jakarta.servlet.http.HttpSession;
 
@@ -80,7 +76,7 @@ public class UserController {
         // Create and save the User entity
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password); // Ensure the password is hashed in the service
+        user.setPassword(password);
         user.setRole(role);
         userService.save(user);
 
@@ -219,7 +215,7 @@ public class UserController {
         }
 
         user.setUsername(userDetails.getUsername());
-        user.setPassword(userDetails.getPassword()); // passwords are not encoded for now
+        user.setPassword(userDetails.getPassword());
         user.setRole(userDetails.getRole());
 
         userService.save(user);

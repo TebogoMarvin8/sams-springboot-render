@@ -55,11 +55,7 @@ public class ClassStudentRelationshipService {
 
     // Remove a student from a class
     public void removeStudentFromClass(Long classId, Long studentId) {
-        Optional<ClassStudentRelationship> relationship = repository.findByClazz_IdAndStudent_Id(classId, studentId); // Changed
-                                                                                                                      // from
-                                                                                                                      // AClass
-                                                                                                                      // to
-                                                                                                                      // Clazz
+        Optional<ClassStudentRelationship> relationship = repository.findByClazz_IdAndStudent_Id(classId, studentId);
         relationship.ifPresent(repository::delete);
     }
 }

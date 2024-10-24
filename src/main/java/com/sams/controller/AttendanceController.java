@@ -3,6 +3,8 @@ package com.sams.controller;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -68,8 +70,8 @@ public class AttendanceController {
         attendanceRepository.save(attendance);
 
         // Send attendance email
-       emailService.sendAttendanceMarkedEmail(student.getEmail(), student.getFirstName(), clazz.getClassName());
-    
+        emailService.sendAttendanceMarkedEmail(student.getEmail(), student.getFirstName(), clazz.getClassName());
+
         return ResponseEntity
                 .ok("Attendance marked for " + student.getFirstName() + " in class " + clazz.getClassName());
     }
@@ -86,28 +88,32 @@ public class AttendanceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
         }
 
-        // Get current time and day
-        LocalDateTime now = LocalDateTime.now();
+        // Get current time and day in GMT+2
+        ZonedDateTime nowInGmtPlus2 = ZonedDateTime.now(ZoneId.of("GMT+2"));
+
+        // Extract the LocalDateTime
+        LocalDateTime now = nowInGmtPlus2.toLocalDateTime();
         LocalTime currentTime = now.toLocalTime();
         DayOfWeek currentDay = now.getDayOfWeek();
-        String dayOfWeekString = currentDay.name(); // Returns "MONDAY", "TUESDAY", etc. converted to String
+        String dayOfWeekString = currentDay.name().toUpperCase(); // Returns "MONDAY", "TUESDAY", etc.
 
         // Find the class based on the student's schedule and the current time
-        Clazz currentClass = classRepository.findActiveClassByStudentAndTime(student.getId(), currentTime,dayOfWeekString);
+        Clazz currentClass = classRepository.findActiveClassByStudentAndTime(student.getId(), currentTime,
+                dayOfWeekString);
 
         if (currentClass == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No active class for student at the current time");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No active class for student at the current time");
         }
 
-                
         // Mark attendance for this class
         attendanceService.markAttendance(student.getId(), currentClass.getId());
 
-
         // Send attendance email
-       emailService.sendAttendanceMarkedEmail(student.getEmail(), student.getFirstName(), currentClass.getClassName());
+        emailService.sendAttendanceMarkedEmail(student.getEmail(), student.getFirstName(), currentClass.getClassName());
 
-        return ResponseEntity.ok("Attendance marked for " + student.getFirstName() + " in class " + currentClass.getClassName());
+        return ResponseEntity
+                .ok("Attendance marked for " + student.getFirstName() + " in class " + currentClass.getClassName());
     }
 
 }

@@ -3,6 +3,8 @@ package com.sams.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,9 +62,17 @@ public class InstructorController {
     @GetMapping("/attendance/date")
     public List<Attendance> getAttendanceByDate(
             @RequestParam("dateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX); // End of the day (23:59:59.999999999)
-        return instructorService.getAttendanceByDate(startOfDay, endOfDay);
+
+        // Convert the date to ZonedDateTime in GMT+2
+        ZonedDateTime startOfDay = date.atStartOfDay(ZoneId.of("GMT+2"));
+        ZonedDateTime endOfDay = date.atTime(LocalTime.MAX).atZone(ZoneId.of("GMT+2")); // End of day in GMT+2
+
+        // Convert ZonedDateTime to LocalDateTime
+        LocalDateTime start = startOfDay.toLocalDateTime();
+        LocalDateTime end = endOfDay.toLocalDateTime();
+
+        // Fetch attendance records between start and end of the day in GMT+2
+        return instructorService.getAttendanceByDate(start, end);
     }
 
     @GetMapping("/attendance/class/{classId}")

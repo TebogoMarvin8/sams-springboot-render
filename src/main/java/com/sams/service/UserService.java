@@ -21,7 +21,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // Simple custom password transformation function
+    //custom password transformation function
     private String customPasswordTransform(String password) {
         // A salt-like string and shift characters by 2
         String salt = "S@1t&^#*&@^#*^123863860hsuig"; // Custom "salt" added
